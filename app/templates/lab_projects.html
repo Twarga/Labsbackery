@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Projects</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <style>
+        body { background-color: #1b1c1d; color: #f2711c; }
+        .main.container { margin-top: 7em; }
+        .ui.menu { background-color: #2c2c2c; }
+        .ui.menu .item { color: #f2711c; }
+        .ui.card { background-color: #2c2c2c; box-shadow: 0 1px 3px 0 #f2711c, 0 0 0 1px #f2711c; }
+        .ui.card .header, .ui.card .meta, .ui.card .description { color: #f2711c; }
+    </style>
+</head>
+<body>
+    <div class="ui fixed inverted menu">
+        <div class="ui container">
+            <a href="#" class="header item">Lab Baker</a>
+            <a href="/vagrant-boxes" class="item">Vagrant Boxes</a>
+            <a href="/lab-projects" class="active item">Lab Projects</a>
+        </div>
+    </div>
+
+    <div class="ui main container">
+        <h1 class="ui header">
+            <i class="lab icon"></i>
+            <div class="content">
+                Lab Projects
+                <div class="sub header">Your local lab projects</div>
+            </div>
+        </h1>
+
+        <div class="ui three stackable cards">
+            {% for project in projects %}
+            <div class="ui card">
+                <div class="content">
+                    <div class="header">{{ project.name }}</div>
+                    <div class="meta">Created: {{ project.created_at }}</div>
+                    <div class="description">{{ project.description }}</div>
+                </div>
+                <div class="extra content">
+                    <span>
+                        <i class="box icon"></i>
+                        {{ project.boxes|length }} Boxes
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+</body>
+</html>

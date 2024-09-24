@@ -29,11 +29,8 @@
             background-color: #1b1c1d;
             box-shadow: 0 1px 3px 0 #f2711c, 0 0 0 1px #f2711c;
         }
-        .ui.card .header {
+        .ui.card .header, .ui.card .meta, .ui.card .description {
             color: #f2711c;
-        }
-        .ui.card .meta, .ui.card .description {
-            color: #e0e0e0;
         }
         .ui.button {
             background-color: #f2711c;
@@ -87,11 +84,11 @@
                 <div class="right menu">
                     <a href="#" class="item">
                         <i class="cloud download icon"></i>
-                        Cloud
+                        Download
                     </a>
                     <a href="#" class="item">
                         <i class="cog icon"></i>
-                        Settings    
+                        Manage
                     </a>
                 </div>
             </div>
@@ -110,6 +107,7 @@
                 <a class="active item" data-tab="vagrant-boxes">Vagrant Boxes</a>
                 <a class="item" data-tab="labs">Labs</a>
             </div>
+            
             <div class="ui bottom attached active tab segment" data-tab="vagrant-boxes">
                 <div class="ui three stackable cards">
                     {% if boxes %}
@@ -131,9 +129,29 @@
                     {% endif %}
                 </div>
             </div>
+            
             <div class="ui bottom attached tab segment" data-tab="labs">
-                <p>Your labs will be displayed here.</p>
-                <!-- Add content for labs here -->
+                <div class="ui three stackable cards">
+                    {% if projects %}
+                        {% for project in projects %}
+                        <div class="ui card">
+                            <div class="content">
+                                <div class="header">{{ project.name }}</div>
+                                <div class="meta">Created: {{ project.created_at }}</div>
+                                <div class="description">{{ project.description }}</div>
+                            </div>
+                            <div class="extra content">
+                                <span>
+                                    <i class="box icon"></i>
+                                    {{ project.boxes|length }} Boxes
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No lab projects available. Create a new lab project to get started.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

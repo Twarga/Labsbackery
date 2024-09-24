@@ -19,3 +19,11 @@ def vagrant_boxes():
 def vagrant_box_info(box_id):
     box = get_box_by_id(box_id)  # You'll need to implement this function
     return render_template('vagrant_box_info.html', box=box)
+
+from flask import render_template
+from app.lab_utils import scan_lab_projects
+
+@main.route('/lab-projects')
+def lab_projects():
+    projects = scan_lab_projects()
+    return render_template('lab_projects.html', projects=projects)
