@@ -25,9 +25,9 @@ This section will display available Vagrant boxes and existing lab projects.
 - [x] Design a template to show Vagrant box information
 
 #### 3.2 Lab Projects (Recipes)
-- [ ] Develop a function to scan for existing lab projects
-- [ ] Create a route to list local lab projects
-- [ ] Design a template to display lab project information
+- [x] Develop a function to scan for existing lab projects
+- [x] Create a route to list local lab projects
+- [x] Design a template to display lab project information
 
 ## 4. Manager Section
 ### Explanation:
