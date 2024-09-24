@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Baker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <style>
+        body {
+            background-color: #1b1c1d;
+            color: #f2711c;
+        }
+        .main.container {
+            margin-top: 7em;
+        }
+        .ui.menu {
+            background-color: #2c2c2c;
+        }
+        .ui.menu .item, .ui.menu .item.header {
+            color: #f2711c;
+        }
+        .ui.header {
+            color: #f2711c;
+        }
+        .ui.header .sub.header {
+            color: #e0e0e0;
+        }
+        .ui.card {
+            background-color: #1b1c1d;
+            box-shadow: 0 1px 3px 0 #f2711c, 0 0 0 1px #f2711c;
+        }
+        .ui.card .header {
+            color: #f2711c;
+        }
+        .ui.card .meta, .ui.card .description {
+            color: #e0e0e0;
+        }
+        .ui.button {
+            background-color: #f2711c;
+            color: #1b1c1d;
+        }
+        .ui.input input {
+            background-color: #2c2c2c;
+            color: #f2711c;
+            border: 1px solid #f2711c;
+        }
+        .ui.tab {
+            background-color: #2c2c2c;
+            border: 1px solid #f2711c;
+            padding: 1em;
+        }
+        .ui.tabular.menu .item {
+            color: #e0e0e0;
+        }
+        .ui.tabular.menu .active.item {
+            color: #f2711c;
+        }
+        .ui.sidebar {
+            background-color: #1b1c1d;
+        }
+        .ui.sidebar .item {
+            color: #f2711c !important;
+        }
+        .pusher {
+            background-color: #1b1c1d !important;
+        }
+    </style>
+</head>
+<body>    <!-- Sidebar Menu -->
+    <div class="ui vertical inverted sidebar menu left">
+        <a class="item" href="#"><i class="home icon"></i> Home</a>
+        <a class="item" href="#"><i class="box icon"></i> Vagrant Boxes</a>
+        <a class="item" href="#"><i class="lab icon"></i> Labs</a>
+        <a class="item" href="#"><i class="cog icon"></i> Settings</a>
+    </div>
+
+    <!-- Page Contents -->
+    <div class="pusher">
+        <div class="ui fixed inverted menu">
+            <div class="ui container">
+                <a class="item" id="sidebar-toggle">
+                    <i class="sidebar icon"></i>
+                </a>
+                <a href="#" class="header item">
+                    Lab Baker
+                </a>
+                <div class="right menu">
+                    <a href="#" class="item">
+                        <i class="cloud download icon"></i>
+                        Cloud
+                    </a>
+                    <a href="#" class="item">
+                        <i class="cog icon"></i>
+                        Settings    
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui main container">
+            <h1 class="ui header">
+                <i class="boxes icon"></i>
+                <div class="content">
+                    Lab Baker
+                    <div class="sub header">Manage your Vagrant boxes and labs</div>
+                </div>
+            </h1>
+
+            <div class="ui top attached tabular menu">
+                <a class="active item" data-tab="vagrant-boxes">Vagrant Boxes</a>
+                <a class="item" data-tab="labs">Labs</a>
+            </div>
+            <div class="ui bottom attached active tab segment" data-tab="vagrant-boxes">
+                <div class="ui three stackable cards">
+                    {% if boxes %}
+                        {% for box in boxes %}
+                        <div class="ui card">
+                            <div class="content">
+                                <a href="{{ url_for('main.vagrant_box_info', box_id=loop.index0) }}" class="header">{{ box.name }}</a>
+                                <div class="meta">
+                                    <span class="category">Provider: {{ box.provider }}</span>
+                                </div>
+                                <div class="description">
+                                    Version: {{ box.version }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No Vagrant boxes available. Please add some Vagrant boxes to your system.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="ui bottom attached tab segment" data-tab="labs">
+                <p>Your labs will be displayed here.</p>
+                <!-- Add content for labs here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script>
+        $('.menu .item').tab();
+        $('#sidebar-toggle').click(function() {
+            $('.ui.sidebar').sidebar('toggle');
+        });
+    </script>
+</body>
+</html>

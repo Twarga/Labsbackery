@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ box.name }} - Vagrant Box Info</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <style>
+        body {
+            background-color: #1b1c1d;
+            color: #f2711c;
+        }
+        .main.container {
+            margin-top: 7em;
+        }
+        .ui.menu {
+            background-color: #2c2c2c;
+        }
+        .ui.menu .item, .ui.menu .item.header {
+            color: #f2711c;
+        }
+        .ui.header {
+            color: #f2711c;
+        }
+        .ui.segment {
+            background-color: #2c2c2c;
+            border: 1px solid #f2711c;
+        }
+        .ui.label {
+            background-color: #f2711c;
+            color: #1b1c1d;
+        }
+        .ui.button {
+            background-color: #f2711c;
+            color: #1b1c1d;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui fixed inverted menu">
+        <div class="ui container">
+            <a href="#" class="header item">Lab Baker</a>
+            <a href="/vagrant-boxes" class="item">Back to Boxes</a>
+        </div>
+    </div>
+
+    <div class="ui main container">
+        <h1 class="ui header">
+            <i class="box icon"></i>
+            <div class="content">
+                {{ box.name }}
+                <div class="sub header">Vagrant Box Information</div>
+            </div>
+        </h1>
+
+        <div class="ui segment">
+            <h3 class="ui header">Details</h3>
+            <div class="ui list">
+                <div class="item">
+                    <div class="ui label">Provider</div>
+                    {{ box.provider }}
+                </div>
+                <div class="item">
+                    <div class="ui label">Version</div>
+                    {{ box.version }}
+                </div>
+                <div class="item">
+                    <div class="ui label">Size</div>
+                    {{ box.size }} MB
+                </div>
+            </div>
+        </div>
+
+        <div class="ui segment">
+            <h3 class="ui header">Description</h3>
+            <p>{{ box.description }}</p>
+        </div>
+
+        <div class="ui segment">
+            <h3 class="ui header">Actions</h3>
+            <button class="ui button">Start VM</button>
+            <button class="ui button">Update Box</button>
+            <button class="ui button">Delete Box</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+</body>
+</html>
