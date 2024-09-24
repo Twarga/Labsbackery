@@ -22,7 +22,7 @@ This section will display available Vagrant boxes and existing lab projects.
 #### 3.1 Vagrant Boxes (Ingredients)
 - [x] Create a function to fetch available Vagrant boxes
 - [x] Implement a route to display Vagrant boxes
-- [ ] Design a template to show Vagrant box information
+- [x] Design a template to show Vagrant box information
 
 #### 3.2 Lab Projects (Recipes)
 - [ ] Develop a function to scan for existing lab projects
