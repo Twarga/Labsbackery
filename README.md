@@ -104,6 +104,6 @@ This repository is **AGPL‑3.0‑or‑later**. That means:
 
 * **Discussions** – [https://github.com/twarga/LabsBakery/discussions](https://github.com/twarga/LabsBakery/discussions)
 * **Issues** – please search before filing.
-* **Twitter/X** – [@twarga](https://twitter.com/twarga) – progress log (#100DaysOfDevSecOps).
+* **Twitter/X** – [@twarga](https://x.com/Twarga_Dev) – progress log (#100DaysOfDevSecOps).
 
 Star ★ the repo to follow along – the oven’s just warming up!
