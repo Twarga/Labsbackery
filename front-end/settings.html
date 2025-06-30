@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased bg-bakerybg min-h-screen">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Settings – LabsBakery</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥐</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // --- UNIFIED DESIGN SYSTEM ---
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                bakerybg: '#FFF7E1',
+                bakerysoft: '#FFE6B0',
+                bakeryaccent: '#FFB347',
+                bakerydark: '#D4870C',
+                bakerytext: '#3B2F12',
+                bakerytextsoft: '#a97a4e',
+              },
+              fontFamily: { sans: ['Nunito', 'sans-serif'] },
+              boxShadow: {
+                'bakery': '0 4px 24px 0 rgba(200,150,80,0.12)',
+                'bakery-md': '0 2px 12px 0 rgba(200,150,80,0.1)',
+              },
+            }
+          }
+        }
+    </script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        /* --- UNIFIED BASE STYLES --- */
+        body { font-family: 'Nunito', sans-serif; color: #3B2F12; }
+        .switch input:checked + .dot { transform: translateX(100%); background-color: #D4870C; }
+    </style>
+</head>
+<body class="bg-bakerybg min-h-screen text-bakerytext" x-data="settingsPage()">
+
+<!-- HEADER: Consistent across all pages -->
+<header class="flex-shrink-0 flex items-center justify-between px-6 py-3 bg-gradient-to-b from-bakerysoft to-bakerybg shadow-md gap-4 z-20 mb-10">
+    <a href="dashboard.html" class="flex items-center gap-2 text-bakerytext font-extrabold text-2xl">
+        <span class="text-3xl">🥐</span> LabsBakery
+    </a>
+    <div class="flex-1 text-center">
+        <h1 class="text-xl font-bold text-bakerytext">Settings</h1>
+    </div>
+    <div class="w-48 text-right"> <!-- Placeholder for alignment -->
+        <a href="profile.html" class="text-bakerytextsoft hover:text-bakerydark transition text-2xl" title="Profile">🧑‍🍳</a>
+    </div>
+</header>
+
+
+<main class="max-w-3xl mx-auto px-4 py-10 space-y-8">
+    
+    <!-- Section Card Template -->
+    <div class="bg-white rounded-2xl shadow-bakery p-6 border-2 border-bakerysoft">
+        <h2 class="text-xl font-extrabold text-bakerytext flex items-center gap-2 mb-4">
+            Appearance <span>🎨</span>
+        </h2>
+        <div class="flex items-center justify-between">
+            <label for="dark-mode-toggle" class="font-semibold text-bakerytext/90">Dark Mode</label>
+            <label for="dark-mode-toggle" class="flex items-center cursor-pointer">
+                <div class="relative">
+                    <input id="dark-mode-toggle" type="checkbox" class="sr-only" x-model="darkMode" @change="toggleTheme()">
+                    <div class="block bg-bakerysoft w-14 h-8 rounded-full"></div>
+                    <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                </div>
+            </label>
+        </div>
+        <p class="text-sm text-bakerytextsoft mt-2">Currently a placeholder. Theme switching coming soon!</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-bakery p-6 border-2 border-bakerysoft">
+        <h2 class="text-xl font-extrabold text-bakerytext flex items-center gap-2 mb-4">
+            Data Management <span>🧹</span>
+        </h2>
+        <div class="flex items-center justify-between">
+            <div class="pr-4">
+                <h3 class="font-semibold text-bakerytext/90">Clear All Local Data</h3>
+                <p class="text-sm text-bakerytextsoft mt-1">This will remove all your saved labs, profile information, and settings from this browser. This cannot be undone.</p>
+            </div>
+            <button @click="clearAllData()" class="px-4 py-2 text-sm bg-red-100 text-red-700 rounded-lg shadow-bakery-md font-semibold hover:bg-red-200 transition border border-red-200 flex-shrink-0">
+                Clear Data
+            </button>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-bakery p-6 border-2 border-bakerysoft">
+        <h2 class="text-xl font-extrabold text-bakerytext flex items-center gap-2 mb-4">
+            About & Help <span>🧁</span>
+        </h2>
+        <div class="space-y-2">
+            <a href="#" class="font-semibold text-bakerydark hover:underline flex items-center gap-2">Documentation</a>
+            <a href="#" class="font-semibold text-bakerydark hover:underline flex items-center gap-2">Report a Bug</a>
+            <a href="https://github.com/your-repo" target="_blank" class="font-semibold text-bakerydark hover:underline flex items-center gap-2">View on GitHub</a>
+        </div>
+    </div>
+</main>
+
+<script>
+function settingsPage() {
+    return {
+        darkMode: false, // Placeholder
+        toggleTheme() {
+            // Logic for theme switching will go here
+            alert("Dark mode is coming soon!");
+            this.darkMode = !this.darkMode; // Revert the toggle for now
+        },
+        clearAllData() {
+            if (confirm("Are you absolutely sure? This will delete all your local labs and profile data.")) {
+                // Logic for clearing localStorage/IndexedDB will go here
+                alert("All local data has been cleared!");
+            }
+        }
+    }
+}
+</script>
+</body>
+</html>

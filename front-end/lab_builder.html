@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" x-data="labBuilder()" x-init="init()" class="antialiased bg-bakerybg min-h-screen">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LabsBakery – Visual Lab Builder</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥐</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // --- UNIFIED DESIGN SYSTEM ---
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bakerybg: '#FFF7E1',
+            bakerysoft: '#FFE6B0',
+            bakeryaccent: '#FFB347',
+            bakerydark: '#D4870C',
+            bakerytext: '#3B2F12',
+            bakerytextsoft: '#a97a4e',
+          },
+          fontFamily: { sans: ['Nunito', 'sans-serif'] },
+          boxShadow: {
+            'bakery': '0 4px 24px 0 rgba(200,150,80,0.12)',
+            'bakery-md': '0 2px 12px 0 rgba(200,150,80,0.1)',
+          },
+           keyframes: {
+            pulse: {
+              '0%, 100%': { transform: 'translateY(-50%) scale(1)', opacity: '0.7' },
+              '50%': { transform: 'translateY(-50%) scale(1.25)', opacity: '1' },
+            }
+          },
+          animation: { pulse: 'pulse 1.5s ease-in-out infinite' }
+        }
+      }
+    }
+  </script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    /* --- UNIFIED BASE STYLES --- */
+    body { font-family: 'Nunito', sans-serif; color: #3B2F12; }
+    .canvas-bg { background-image: linear-gradient(90deg, #fff6e2 1px, transparent 1px), linear-gradient(180deg, #fff6e2 1px, transparent 1px); background-size: 40px 40px; }
+    #canvas-wrapper { position: relative; min-height: 100%; transform-origin: top left; transition: transform 0.2s ease-out; }
+    .node {
+      position: absolute; width: 160px;
+      touch-action: none; 
+      background: white; border: 2px solid #FFE6B0; border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(200, 150, 80, .12);
+      cursor: grab; user-select: none; transition: box-shadow .2s, border-color .2s;
+    }
+    .node:hover .connect-port { transform: translateY(-50%) scale(1.1); border-color: #FFB347; animation: pulse 1.5s ease-in-out infinite; }
+    .node.selected { box-shadow: 0 0 0 4px #FFB347; border-color: #FFB347; z-index: 40; }
+    .connect-port { position: absolute; top: 50%; right: -8px; transform: translateY(-50%); width: 16px; height: 16px; background: white; border: 2px solid #FFD58A; border-radius: 50%; cursor: crosshair; transition: all .2s; }
+    .vm-drag { transition: all .15s; border: 2px solid #fff6e2; }
+    .vm-drag:hover { border-color: #FFB347; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(200,150,80,0.2); }
+    .vm-drag.dragging { opacity: .4; transform: scale(0.95); }
+    .form-input { width: 100%; background: #fffbf0; border: 1px solid #FFE6B0; border-radius: 8px; padding: 6px 10px; font-size: 14px; transition: all .2s; color: #3B2F12; }
+    .form-input:focus { outline: none; border-color: #FFB347; box-shadow: 0 0 0 3px #ffe6b0; }
+    .form-label { display: block; font-weight: 700; color: #a97a4e; margin-bottom: 4px; font-size: 14px; }
+    .markdown-preview h1, .markdown-preview h2, .markdown-preview h3 { font-weight: 800; margin: 1rem 0 0.5rem; }
+    .markdown-preview h1 { font-size: 1.5rem; border-bottom: 2px solid #FFE6B0; padding-bottom: 0.5rem;}
+    .markdown-preview h2 { font-size: 1.25rem; border-bottom: 1px solid #FFE6B0; padding-bottom: 0.25rem;}
+    .markdown-preview h3 { font-size: 1.1rem; }
+    .markdown-preview p { margin-bottom: 0.75rem; line-height: 1.6; }
+    .markdown-preview pre, .markdown-preview code { font-family: monospace; }
+    .markdown-preview code { background-color: #fffbf0; border: 1px solid #FFE6B0; color: #D4870C; padding: 0.1rem 0.3rem; border-radius: 4px; }
+    .markdown-preview pre { background-color: #fffbf0; border: 1px solid #FFE6B0; padding: 0.75rem; border-radius: 8px; overflow-x: auto; }
+    .markdown-preview pre code { background: none; border: none; padding: 0; }
+    .markdown-preview ul, .markdown-preview ol { list-style-position: inside; padding-left: 0.5rem; margin-bottom: 0.75rem; }
+    .markdown-preview li { margin-bottom: 0.25rem; }
+    .markdown-preview a { color: #FFB347; font-weight: 600; text-decoration: underline; }
+  </style>
+</head>
+<body class="h-screen flex flex-col text-bakerytext" @keydown.window="handleKeyPress($event)">
+
+  <!-- HEADER -->
+  <header class="flex-shrink-0 flex items-center justify-between px-6 py-3 bg-gradient-to-b from-bakerysoft to-bakerybg shadow-md gap-4 z-20">
+    <a href="dashboard.html" class="flex items-center gap-2 text-bakerytext font-extrabold text-2xl">
+        <span class="text-3xl">🥐</span> LabsBakery
+    </a>
+    <div class="flex-1 max-w-lg">
+      <input x-model="labSettings.title" placeholder="My Delicious Lab Name" @input="saveState()" class="px-4 py-2 text-lg font-bold bg-white rounded-lg focus:outline-none focus:border-bakeryaccent focus:ring-2 focus:ring-bakerysoft text-bakerytext w-full shadow-inner border border-bakerysoft transition">
+    </div>
+    <div class="flex items-center gap-2">
+      <button @click="exportJson" class="hidden sm:inline-block px-4 py-1.5 text-sm bg-white rounded-lg shadow-bakery-md font-semibold hover:bg-bakerybg transition border border-bakerysoft">Export</button>
+      <button @click="deployLab" class="px-5 py-2 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition-all transform hover:scale-105 flex items-center gap-1.5">
+        <span class="text-base">🍞</span> Bake Lab
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="flex flex-1 overflow-hidden">
+    <!-- PALETTE -->
+    <aside class="w-64 bg-bakerybg border-r border-bakerysoft p-4 flex flex-col flex-shrink-0 z-10">
+      <div class="font-bold text-bakerytextsoft mb-3">Ingredients</div>
+      <div class="relative mb-4">
+          <input type="text" x-model="searchTerm" placeholder="Search ingredients..." class="form-input w-full !pl-8 !bg-white">
+          <svg class="w-4 h-4 absolute top-1/2 left-2.5 -translate-y-1/2 text-bakerytextsoft" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+      </div>
+
+      <div class="flex-1 overflow-y-auto pr-2 -mr-2 space-y-4">
+        <template x-for="category in filteredCategories" :key="category.name">
+            <div>
+                <h3 class="font-bold text-sm text-bakerydark mb-2" x-text="category.name"></h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <template x-for="vm in category.vms" :key="vm.type">
+                        <div class="bg-white rounded-xl p-2 flex flex-col items-center justify-center cursor-grab vm-drag shadow-bakery-md"
+                            :draggable="true" @dragstart="paletteDragStart($event, vm)" @dragend="paletteDragEnd($event)" :title="'Drag to add ' + vm.label">
+                            <img :src="vm.icon" class="h-9 object-contain mb-1.5" :alt="vm.label + ' icon'" />
+                            <span class="text-[11px] font-semibold text-center leading-tight text-bakerytext" x-text="vm.label"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+      </div>
+      
+      <div class="pt-4 mt-auto flex-shrink-0">
+        <div class="w-full h-px bg-bakerysoft mb-4"></div>
+        <div class="flex justify-center gap-2 mb-2">
+            <button @click="startAllVMs()" title="Start All VMs" class="flex-1 h-10 flex items-center justify-center gap-2 bg-green-100 text-green-700 rounded-lg shadow-bakery-md hover:bg-green-200 font-semibold transition-colors">Start All</button>
+            <button @click="stopAllVMs()" title="Stop All VMs" class="flex-1 h-10 flex items-center justify-center gap-2 bg-red-100 text-red-700 rounded-lg shadow-bakery-md hover:bg-red-200 font-semibold transition-colors">Stop All</button>
+        </div>
+        <div class="w-full h-px bg-bakerysoft my-4"></div>
+        <div class="flex justify-center gap-2">
+            <button @click="deleteSelectedNode()" :disabled="!selectedNodeId" title="Delete Selected (Del)" class="w-12 h-10 flex items-center justify-center bg-white rounded-lg shadow-bakery-md hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-bakerysoft"><svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+            <button @click="undo()" :disabled="undoStack.length <= 1" title="Undo (Ctrl+Z)" class="w-12 h-10 flex items-center justify-center bg-white rounded-lg shadow-bakery-md hover:bg-bakerybg disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-bakerysoft"><svg class="h-6 w-6 text-bakerytextsoft" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg></button>
+            <button @click="redo()" :disabled="redoStack.length === 0" title="Redo (Ctrl+Y)" class="w-12 h-10 flex items-center justify-center bg-white rounded-lg shadow-bakery-md hover:bg-bakerybg disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-bakerysoft"><svg class="h-6 w-6 text-bakerytextsoft" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10h-10a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6" /></svg></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CANVAS -->
+    <section id="canvas" class="flex-1 canvas-bg overflow-auto relative" @dragover.prevent @drop="onCanvasDrop($event)" @click="selectedNodeId = null">
+      <div id="canvas-wrapper" :style="`transform: scale(${zoomLevel})`">
+        <template x-for="node in nodes" :key="node.id">
+          <div :id="`node-${node.id}`" 
+               class="node" 
+               :class="{'selected': selectedNodeId === node.id || connectingFrom === node.id}" 
+               :style="`transform: translate(${node.x}px, ${node.y}px);`"
+               @mousedown.stop @click.stop="onNodeClick(node.id)">
+            <div class="h-6 bg-bakerybg rounded-t-[12px] -mx-px -mt-px flex items-center justify-between px-2">
+               <img :src="node.icon" class="w-4 h-4" :alt="node.name" />
+               <div class="w-2.5 h-2.5 rounded-full" :class="{ 'bg-gray-400': node.status === 'stopped', 'bg-yellow-400 animate-pulse': node.status === 'booting', 'bg-green-500': node.status === 'running' }" :title="`Status: ${node.status}`"></div>
+            </div>
+            <div class="flex flex-col items-center justify-center flex-1 pt-2 pb-1">
+              <span class="font-bold text-sm text-center leading-tight" x-text="node.name"></span>
+              <span class="text-xs text-bakerytext/80 mt-1" x-text="node.os"></span>
+            </div>
+            <div class="h-8 border-t border-bakerysoft bg-gray-50/50 rounded-b-[12px] -mx-px -mb-px flex items-center justify-center gap-2">
+              <button x-show="node.status === 'stopped' || node.status === 'booting'" @click.stop="startVM(node.id)" :disabled="node.status === 'booting'" class="w-7 h-7 flex items-center justify-center text-green-600 hover:bg-green-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-wait" title="Start VM"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg></button>
+              <button x-show="node.status === 'running'" @click.stop="stopVM(node.id)" class="w-7 h-7 flex items-center justify-center text-red-600 hover:bg-red-100 rounded-full transition-colors" title="Stop VM"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" /></svg></button>
+              <div class="h-4 w-px bg-bakerysoft"></div>
+              <button @click.stop="accessTerminal(node.id)" :disabled="node.status !== 'running'" class="w-7 h-7 flex items-center justify-center text-bakerytext hover:bg-bakerysoft rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed" title="Access Terminal"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg></button>
+            </div>
+            <div class="connect-port" @click.stop="initConnect(node.id)" title="Create Connection"></div>
+          </div>
+        </template>
+      </div>
+      <div x-show="nodes.length === 0" class="absolute inset-0 flex flex-col items-center justify-center text-center text-bakerytextsoft pointer-events-none"><span class="text-6xl mb-4">🥖</span><h2 class="text-2xl font-bold text-bakerytext">Your baking sheet is empty!</h2><p>Drag an ingredient from the left to get started.</p></div>
+      
+      <!-- ZOOM CONTROLS -->
+      <div class="absolute bottom-4 right-4 z-10 flex items-center bg-white/80 backdrop-blur-sm rounded-lg shadow-bakery-md border border-bakerysoft">
+        <button @click="zoomOut()" title="Zoom Out" class="p-2 text-bakerytextsoft hover:text-bakerydark transition"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6" /></svg></button>
+        <div class="px-2 text-sm font-bold text-bakerytext" x-text="`${Math.round(zoomLevel * 100)}%`"></div>
+        <button @click="zoomIn()" title="Zoom In" class="p-2 text-bakerytextsoft hover:text-bakerydark transition"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" /></svg></button>
+        <div class="w-px h-6 bg-bakerysoft"></div>
+        <button @click="resetZoom()" title="Reset Zoom" class="p-2 text-bakerytextsoft hover:text-bakerydark transition"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5M15 15l5.25 5.25" /></svg></button>
+      </div>
+    </section>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="w-96 bg-bakerybg border-l border-bakerysoft p-4 flex flex-col flex-shrink-0 z-10">
+      <!-- SELECTED NODE VIEW -->
+      <div x-show="selectedNode" x-transition class="flex flex-col h-full"><template x-if="selectedNode"><div class="overflow-y-auto pr-2 -mr-2 space-y-5"><h2 class="text-lg font-extrabold text-bakerytext flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-bakerydark" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" /></svg>Ingredient Config</h2><div class="space-y-4"><div><label class="form-label">Display Name</label><input type="text" x-model="selectedNode.name" @input="saveState()" class="form-input"></div><div class="grid grid-cols-3 gap-3"><div><label class="form-label">RAM</label><input type="text" x-model="selectedNode.ram" @input="saveState()" placeholder="2GB" class="form-input"></div><div><label class="form-label">vCPU</label><input type="text" x-model="selectedNode.cpu" @input="saveState()" placeholder="2" class="form-input"></div><div><label class="form-label">Disk</label><input type="text" x-model="selectedNode.disk" @input="saveState()" placeholder="50GB" class="form-input"></div></div><div><label class="form-label">Initial Scripts (on boot)</label><textarea x-model="selectedNode.scripts" @input="saveState()" rows="4" placeholder="e.g., apt update && apt upgrade -y" class="form-input font-mono text-xs"></textarea></div></div><div class="w-full h-px bg-bakerysoft"></div><div class="space-y-4"><h3 class="font-bold text-bakerytextsoft flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 12a1 1 0 102 0V6.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L5 6.414V12zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" /></svg>Network Configuration</h3><div class="space-y-3"><template x-for="(nic, index) in selectedNode.network" :key="index"><div class="bg-white/70 p-3 rounded-lg border border-bakerysoft space-y-3 relative"><div class="flex justify-between items-center"><span class="font-bold text-sm text-bakerydark" x-text="`Interface ${index}`"></span><button @click="removeNetworkInterface(selectedNode.id, index)" title="Remove Interface" class="text-bakerytextsoft hover:text-red-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button></div><div class="grid grid-cols-2 gap-3"><div><label class="form-label text-xs">IP Address</label><input type="text" x-model="nic.ip" @input="saveState()" placeholder="192.168.1.10" class="form-input !text-xs"></div><div><label class="form-label text-xs">Subnet</label><input type="text" x-model="nic.subnet" @input="saveState()" placeholder="255.255.255.0" class="form-input !text-xs"></div></div><div><label class="form-label text-xs">Gateway</label><input type="text" x-model="nic.gateway" @input="saveState()" placeholder="192.168.1.1" class="form-input !text-xs"></div></div></template></div><button @click="addNetworkInterface(selectedNode.id)" class="w-full text-sm font-semibold text-bakerydark bg-white border-2 border-dashed border-bakerysoft rounded-lg py-2 hover:border-bakeryaccent hover:bg-bakerybg transition">+ Add Interface</button></div><div class="w-full h-px bg-bakerysoft"></div><div class="space-y-4"><div><label class="form-label">Notes (Private)</label><textarea x-model="selectedNode.notes" @input="saveState()" rows="4" placeholder="Credentials, reminders, etc." class="form-input"></textarea></div></div></div></template></div>
+      
+      <!-- GLOBAL VIEW -->
+      <div x-show="!selectedNode" x-transition class="flex flex-col h-full"><div class="overflow-y-auto pr-2 -mr-2 flex flex-col h-full space-y-5">
+        <!-- LAB SUMMARY -->
+        <div class="space-y-4">
+          <h2 class="text-lg font-extrabold text-bakerytext flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-bakerydark" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>Lab Summary</h2>
+          <div class="bg-white/70 p-3 rounded-lg border border-bakerysoft grid grid-cols-3 gap-3 text-center">
+            <div>
+              <div class="text-xs font-bold text-bakerytextsoft">TOTAL RAM</div>
+              <div class="font-extrabold text-bakerytext text-lg" x-text="overallUsage.ram"></div>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-bakerytextsoft">TOTAL VCPUS</div>
+              <div class="font-extrabold text-bakerytext text-lg" x-text="overallUsage.cpu"></div>
+            </div>
+             <div>
+              <div class="text-xs font-bold text-bakerytextsoft">TOTAL DISK</div>
+              <div class="font-extrabold text-bakerytext text-lg" x-text="overallUsage.disk"></div>
+            </div>
+          </div>
+        </div>
+        <div class="w-full h-px bg-bakerysoft"></div>
+        <!-- RECIPE GUIDE -->
+        <div class="flex-1 flex flex-col min-h-0 space-y-4">
+          <h2 class="text-lg font-extrabold text-bakerytext flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-bakerydark" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4A7.969 7.969 0 0011 4.804v10A7.968 7.968 0 0114.5 16c1.255 0 2.443-.29 3.5.804v-10A7.968 7.968 0 0014.5 4z" /></svg>Recipe Guide</h2>
+          <div><label class="form-label">Difficulty</label><div class="flex gap-2"><template x-for="level in ['Easy', 'Medium', 'Hard']" :key="level"><button @click="labSettings.difficulty = level; saveState()" :class="{'bg-bakeryaccent text-white font-bold': labSettings.difficulty === level, 'bg-white hover:bg-bakerybg font-semibold': labSettings.difficulty !== level}" class="px-3 py-1 rounded-full text-sm transition shadow-bakery-md flex-1 border border-bakerysoft" x-text="level"></button></template></div></div><div><label class="form-label">Tags</label><input type="text" x-model="labSettings.tags" @input="saveState()" placeholder="e.g. ad, pivoting, webapp" class="form-input"></div><div><label class="form-label">🎯 Objectives</label><textarea x-model="labSettings.objectives" @input="saveState()" rows="3" placeholder="List the goals for this lab. e.g.,
+- Gain initial access via the web server.
+- Escalate privileges to root." class="form-input"></textarea></div><div class="flex-1 flex flex-col min-h-0"><label class="form-label">📝 Walkthrough</label><div class="flex border-b border-bakerysoft mb-2"><button @click="mdEditorTab = 'write'" :class="{'border-bakeryaccent text-bakerydark': mdEditorTab === 'write', 'border-transparent text-bakerytextsoft': mdEditorTab !== 'write'}" class="px-3 py-1 font-semibold border-b-2">Write</button><button @click="mdEditorTab = 'preview'" :class="{'border-bakeryaccent text-bakerydark': mdEditorTab === 'preview', 'border-transparent text-bakerytextsoft': mdEditorTab !== 'preview'}" class="px-3 py-1 font-semibold border-b-2">Preview</button></div><div x-show="mdEditorTab === 'write'" class="flex-1 flex flex-col min-h-0"><div class="bg-white rounded-t-lg border border-b-0 border-bakerysoft p-1 flex items-center gap-1"><button @click="formatText('bold')" title="Bold" class="w-7 h-7 hover:bg-bakerysoft rounded flex items-center justify-center font-bold">B</button><button @click="formatText('italic')" title="Italic" class="w-7 h-7 hover:bg-bakerysoft rounded flex items-center justify-center italic">I</button><button @click="formatText('code')" title="Code" class="w-7 h-7 hover:bg-bakerysoft rounded flex items-center justify-center"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg></button><button @click="formatText('list')" title="List" class="w-7 h-7 hover:bg-bakerysoft rounded flex items-center justify-center"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg></button></div><textarea id="walkthrough_textarea" x-model="labSettings.walkthrough" @input="saveState()" placeholder="Provide a step-by-step guide here... (Markdown supported)" class="form-input flex-1 !rounded-t-none"></textarea></div><div x-show="mdEditorTab === 'preview'" class="flex-1 bg-white border border-bakerysoft rounded-lg p-3 markdown-preview overflow-y-auto" x-html="walkthroughPreviewHtml"></div></div><div><div class="flex justify-between items-center"><label class="form-label">Generated Steps</label><button @click="copyStepsToWalkthrough()" class="text-xs text-bakeryaccent font-semibold hover:underline" x-show="autoGuideSteps.length > 0">Copy to Walkthrough</button></div><div class="text-sm bg-[#fffbf0] border border-bakerysoft rounded-lg p-2 space-y-1"><template x-if="autoGuideSteps.length > 0"><ol class="list-decimal list-inside text-bakerytext/90"><template x-for="step in autoGuideSteps" :key="step"><li x-text="step"></li></template></ol></template><template x-if="autoGuideSteps.length === 0"><p class="text-bakerytextsoft/80">Add ingredients to see steps.</p></template></div></div>
+        </div>
+      </div></div>
+    </aside>
+  </main>
+
+<script>
+// --- UNMODIFIED ALPINE.JS LOGIC ---
+function labBuilder(){return{nodes:[],nodeIdCounter:1,lines:[],labSettings:{title:'New Bake',objectives:'',walkthrough:'',difficulty:'Easy',tags:''},dragVMData:null,selectedNodeId:null,connectingFrom:null,searchTerm:'',mdEditorTab:'write',zoomLevel:1,undoStack:[],redoStack:[],availableVMCategories:[{name:'Attacker Machines',vms:[{type:'kali',icon:'data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHJvbGU9ImltZyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+S2FsaSBMaW51eDwvdGl0bGU+PHBhdGggZD0iTTEyLjc3MyAwaC0uMDM0Yy0uMzI3LjAxMy0uNjEyLjA3My0uNzgzLjEwMy0xLjM5OS4zMzQtMi4yNzIgMS40NjgtMi4xMTkgMi44ODhsLjU0NyA0LjgyNmMxLjM5OS0uNzc2IDIuODYtMS4wMSA0LjM2NC0uNzQxLjQzMy4wNzMuODU0LjIwMyAxLjI2My40MDkuNTQ3LjI3LjcxOC44NDEgMS4wMjYgMS41NDRsLjU0NyAyLjA5NmMuMzk4IDEuMzY0LjEwOSAyLjY5Mi0uNzMyIDMuNzQxLS45NDggMS4yMS0yLjMyOSAxLjg4OS0zLjgxMSAxLjg4OWgtMS45MzljLS4xMDkgMC0uMTk0LjA1OC0uMjM4LjA4OGwtNS4wNDggNy4zNDhjLS4yMDQuMjk4LS4xMi43MzUuMjA0IDEuMDM0LjM1My4yOTguODM4LjM2NyAxLjI2My4xNDZsNC4wNDctMi4yMDVjLjE1LS4wNzQuMjM4LS4yNTMuMi0uNDE0bC0uNTEyLTEuOTExYy0uMTE1LS40NDUuMDk1LS45MDguNTEyLTEuMTY2Ljg5NS0uNTY4IDEuOTk2LS43NDEgMy4wNDItLjQxNCAxLjE1NS4zNTQgMi4wOTUgMS4yMjIgMi41MjkgMi4zNTNsLjMyNy44ODFjLjIwNC41NTUuNzc4Ljg1NCAxLjM1NS43NTQuNjEtLjA4OCAxLjAyNi0uNTU1LDEuMTQtMS4xNTNsMS44NTMtNC4yMWMxLjE4LTEuOTEgMS4yMDMtMy41Ni4zOTgtNC44OTctLjY4LTEuMjM2LTEuNzcyLTIuMDEyLTMuMDk5LTIuMzgybC0uNTEyLTEuODk5Yy0uNDE0LTEuNjU5LTEuNTgzLTIuNzY2LTMuMjM2LTIuOTI2eiIvPjwvc3ZnPg==',label:'Kali Linux',os:'Kali Linux',tags:['linux','attacker','pentest']},{type:'parrot',icon:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTExLjk5MSAxMi4zNzNjLS4wMSAwIC4wMSAwIDAgMCAxMS45OTEgMTIuMzczYy0uMTA5LS4xMS0uMjEtLjIyLS4zMDktLjMzOGwtMi4xMDQtMi4xMDQtMi4yNzUtMi4yNzUtLjM5LS4zODktMi45MzktMi45NC0xLjM2NC0xLjM2NGMtLjM1OC0uMzU4LS43NzQtLjYyMy0xLjIzLS43NjRsLS43ODUtLjIzM2MtLjM5LS4xMTgtLjgwNS0uMTUyLTEuMjE0LS4xNTItMS4wNC0uMDQtMS45NTQuMjc2LTIuNjkuNzg2cy0xLjI1IDEuMjEzLTEuNDY3IDEuOTg5Yy0uMTg4LjY0LS4yMzYgMS4yODgtLjE5MSAxLjkzMWwuMDU2IDEuMDM0YzAgLjI4LS4xMTQuNTYxLS4zMjQuNzU5bC0xLjM0MyAxLjI5NmEuNDM0LjQzNCAwIDAgMC0uMTUuMzYyYzAgLjc0OS4yODggMS40NjcuNzk3IDIuMDAxbDEuNDY3IDEuNDcgMS45NDcgMS45NDdjMS4wNjkgMS4wNjkgMi40ODkgMS42NTkgNCAxLjY1OWMyLjg5OCAwIDUuNjE4LTEuMTEyIDcuNjYyLTMuMTU2bDIuMjA4LTIuMjA4Yy4wMzQtLjAzNC4wNDctLjA4NS4wODItLjEyMWwtNC45NC00Ljk0WiIvPjwvc3ZnPg==',label:'Parrot OS',os:'Parrot Security',tags:['linux','attacker','pentest']}]},{name:'Target Systems',vms:[{type:'win10',icon:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwNzhENiIgZD0iTTAgMy40NDVsMTAuMjI3LS45OTggMCA5LjE4OUwwIDEyLjU4NFptMTAuMjI3IDguMTgxbDEwLjc3My45OTcgMCA5LjE4OEwxMC4yMjcgMjR6bTAtMTcuODUxTDkuMjgxIDBIMjEuMjQzbC0xMS4wMTYgMS43NzV6bTAgOC45OTlsMTEuMDE2Ljk5OFYyMy4wOEw5LjI4MSAyNFoiLz48L3N2Zz4=',label:'Windows 10',os:'Windows 10',tags:['windows','client','target']},{type:'ubuntu',icon:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0U5NTRyMyIgZD0iTTEyIDBjLTYuNjI4IDAtMTIgNS4zNzItMTIgMTJzNS4zNzIgMTIgMTIgMTIgMTItNS4zNzIgMTItMTJTMTguNjI4IDAgMTIgMHptMy44OTQgNS4xODhjLjU4NSAwIC45NzQuNDU1LjkxNiAxLjA0OGwtLjM0MyAzLjYxNGMuNTU0LjEyMy45MzEuNDcyLjkzMS45Mzh2LjAwMmMwIC41Mi0uNDI0LjkzNy0uOTU3LjkzNy0uNTMyIDAtLjk1Ni0uNDI4LS45NTYtLjk0OSAwLS4zNTIuMjA4LS42NjcuNTE0LS44MThsLjI5OS0zLjE1NGMtMS42MzUuNTQxLTIuODEgMS45Ny0yLjgxIDMuNzQgMCAyLjE2MyAxLjc1NyAzLjkxNyAzLjkxNyAzLjkxNyAyLjE2MyAwIDMuOTE3LTEuNzU0IDMuOTE3LTMuOTE3IDAtMi4wMTMtMS41MjctMy42OC0zLjUwMS0zLjg5N3ptLTMuODk0LjAwMmMxLjk3NS4yMTcgMy41MDIgMS44ODQgMy41MDIgMy44OTcgMCAyLjE2My0xLjc1QgMy45MTctMy45MTcgMy45MTdzLTMuOTE3LTEuNzU0LTMuOTE3LTMuOTE3YzAtMS43NyAxLjE3NS0zLjE5OSAyLjgxLTMuNzRsLS4zIDMuMTY1Yy0uMzA1LjE0LS41MTMuNDU1LS41MTMuODA3IDAgLjUxOS40MjQuOTQ5Ljk1Ni45NDkuNTMzIDAgLjk1Ny0uNDI5Ljk1Ny0uOTQ5di0uMDAxYzAtLjQ2NS0uMzc3LS44MTQtLjkyLTEuMDQ4bC4zNDQtMy4xMTRjLS4wNTgtLjU5My4zMzItMS4wNDguOTE1LTEuMDQ4em0wIDguNDI4Yy0uNTg0IDAtLjk3NC0uNDU1LS45MTYtMS4wNDhsLjM0My0zLjYyNWMtLjU1NC0uMTIzLS45MzEtLjQ3Mi0uOTMxLS45Mzh2LS4wMDJjMC0uNTIuNDI0LS45MzcuOTU3LS45MzcuNTMyIDAgLjk1Ni40MjguOTU2Ljk0OSAwIC4zNTItLjIwOC42NjctLjUxNC44MThsLS4yOTkgMy45MjRjMS42MzUtLjU0MSAyLjgxLTEuOTcgMi44MS0zLjc0IDAtMi4xNjMtMS43NTctMy45MTctMy45MTctMy45MTdzLTMuOTE3IDEuNzU0LTMuOTE3IDMuOTE3YzAgMi4wMTMgMS41MjcgMy42OCAzLjUwMSAzLjg5N3oiLz48L3N2Zz4=',label:'Ubuntu',os:'Ubuntu 22.04',tags:['linux','server','target']},{type:'metasploitable',icon:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzZDNUM1MyIgZD0iTTE2LjQgMTcuMmwtMi44IDIuOGgtMy4ybC0yLjgtMi44VjE0bDQuNC00LjQgNC40IDQuNHptNC42－Ni40TDEyIDQuMSAyLjEgMTAuOCAxLjIgMTJsMTAuOCAxMC44IDEuOC0xLjggMS44LTEuOHoiLz48cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJtMTIgMS4yLDEwLjggMTAuOC0xLjIgMS4yLTEuMiAxLjItNi02LTYgNkwxLjIgMTIgMS4yIDkuNmwxMC44LTEwLjhtMC0xLjJMMCA5LjZsMS4yIDEuMiAxLjIgMS4yTDEyIDEuMiIvPjwvc3ZnPg==',label:'Metasploitable',os:'Linux 2.6',tags:['linux','vulnerable','target']}]},{name:'Network Appliances',vms:[{type:'router',icon:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjNEU3QzZEIiBkPSJNMjIgMTFoLTd2LTJoN3Yyem0wIDRoLTd2LTJoN3Yyem0tOS00aC0ydjJoMnYtMnptLTgtOGg3djJoLTdWM205IDBoMnYyaC0yVjN6TTMgOGg3VjZoLTd2em0zIDVoMnYyaC0ydjIuNWMtLjUxNy4wMDMtMS4wMzQuMDA2LTEuNTUyLjAwNi0yLjQ4MyAwLTQuNDQ4LS4wMi00LjQ0OC0xLjAxNlYxM2MwLTEgMi4xODYtMS4wMTYgNC41LTEuMDE2czQuNS4wMTYgNC41IDEuMDE2djIuMDIyYzAgLjM0OC0uMjM4LjY1MS0uNTczLjgxMnoiLz48L3N2Zz4=',label:'Router',os:'Virtual Router',tags:['network','router']},{type:'firewall',icon:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjRTY1NzUyIiBkPSJNMTIgMUwyIDVoMTAuNS41VjFabTIgMGwxMCA0djE3TDQgMjJWMTRoOC4yNS41VjE0aC0uNXY3aC0uNXY1aC0uNXYzaC0uNXYxaC0uNXYtMWgtLjV2LTVoLS41di03aC0uNVY1em04IDRoLTZWOWg2djE0eiIvPjwvc3ZnPg==',label:'Firewall',os:'pfSense',tags:['network','firewall','security']}]}],get filteredCategories(){if(!this.searchTerm.trim())return this.availableVMCategories;const term=this.searchTerm.toLowerCase();return this.availableVMCategories.map(cat=>({...cat,vms:cat.vms.filter(vm=>vm.label.toLowerCase().includes(term)||vm.tags.some(t=>t.toLowerCase().includes(term)))})).filter(cat=>cat.vms.length>0)},get selectedNode(){return this.selectedNodeId?this.nodes.find(n=>n.id===this.selectedNodeId):null},get autoGuideSteps(){if(this.nodes.length===0)return[];const steps=[];this.nodes.forEach(n=>steps.push(`Deploy and start the "${n.name}" VM.`));this.lines.forEach(l=>{const from=this.nodes.find(n=>n.id===l.fromId),to=this.nodes.find(n=>n.id===l.toId);if(from&&to)steps.push(`Establish a network link between "${from.name}" and "${to.name}".`)});return steps},get walkthroughPreviewHtml(){return marked.parse(this.labSettings.walkthrough||'Nothing to preview yet.')},get overallUsage(){const totals=this.nodes.reduce((acc,node)=>{const ram=parseFloat(node.ram)||0;const cpu=parseFloat(node.cpu)||0;const disk=parseFloat(node.disk)||0;acc.ram+=ram;acc.cpu+=cpu;acc.disk+=disk;return acc},{ram:0,cpu:0,disk:0});const ramUnit='GB';const diskUnit='GB';return{ram:`${totals.ram.toFixed(1)} ${ramUnit}`,cpu:`${totals.cpu}`,disk:`${totals.disk.toFixed(1)} ${diskUnit}`}},init(){this.reinitInteract();window.addEventListener('resize',()=>this.updateAllLines());this.saveState()},reinitInteract(){const self=this;if(this._interactable){this._interactable.unset();this._interactable=null}
+this.$nextTick(()=>{self._interactable=interact('.node').draggable({inertia:true,autoScroll:true,listeners:{move(event){const id=Number(event.target.id.replace('node-',''));const node=self.nodes.find(n=>n.id===id);if(!node)return;node.x+=event.dx/self.zoomLevel;node.y+=event.dy/self.zoomLevel;self.updateLinesForNode(id)},end(){self.saveState()}}})})},paletteDragStart(e,vm){this.dragVMData=vm;e.dataTransfer.effectAllowed='copy';e.currentTarget.classList.add('dragging');const g=document.createElement('div');g.style.display='none';document.body.appendChild(g);e.dataTransfer.setDragImage(g,0,0)},paletteDragEnd(e){this.dragVMData=null;e.currentTarget.classList.remove('dragging')},onCanvasDrop(e){if(!this.dragVMData)return;const canvas=e.currentTarget;const rect=canvas.getBoundingClientRect();const x=(e.clientX-rect.left+canvas.scrollLeft)/this.zoomLevel-80;const y=(e.clientY-rect.top+canvas.scrollTop)/this.zoomLevel-55;const id=this.nodeIdCounter++;this.nodes.push({id,x,y,name:`${this.dragVMData.label} ${this.nodes.filter(n=>n.os===this.dragVMData.os).length+1}`,icon:this.dragVMData.icon,os:this.dragVMData.os,ram:'2GB',cpu:'2',disk:'50GB',scripts:'',notes:'',status:'stopped',network:[{ip:'',subnet:'',gateway:''}]});this.$nextTick(()=>{this.reinitInteract();this.saveState()});this.dragVMData=null},onNodeClick(id){if(this.connectingFrom){if(id!==this.connectingFrom)this.createLine(this.connectingFrom,id);this.connectingFrom=null}else{this.selectedNodeId=id}},deleteSelectedNode(){if(!this.selectedNodeId)return;const id=this.selectedNodeId;this.lines=this.lines.filter(l=>{if(l.fromId===id||l.toId===id){try{l.line.remove()}catch(e){}return false}return true});this.nodes=this.nodes.filter(n=>n.id!==id);this.selectedNodeId=null;this.saveState()},setVMStatus(nodeId,status){const node=this.nodes.find(n=>n.id===nodeId);if(node)node.status=status;this.saveState()},startVM(nodeId){this.setVMStatus(nodeId,'booting');setTimeout(()=>{this.setVMStatus(nodeId,'running')},1500)},stopVM(nodeId){this.setVMStatus(nodeId,'stopped')},startAllVMs(){this.nodes.forEach(n=>{if(n.status==='stopped')this.startVM(n.id)})},stopAllVMs(){this.nodes.forEach(n=>this.stopVM(n.id))},accessTerminal(nodeId){const node=this.nodes.find(n=>n.id===nodeId);alert(`Accessing terminal for ${node.name}...`)},addNetworkInterface(nodeId){const node=this.nodes.find(n=>n.id===nodeId);if(node){node.network.push({ip:'',subnet:'',gateway:''});this.saveState()}},removeNetworkInterface(nodeId,index){const node=this.nodes.find(n=>n.id===nodeId);if(node&&node.network.length>1){node.network.splice(index,1);this.saveState()}},initConnect(id){this.connectingFrom=this.connectingFrom===id?null:id},createLine(fromId,toId){if(this.lines.some(l=>(l.fromId===fromId&&l.toId===toId)||(l.fromId===toId&&l.toId===fromId)))return;const fromEl=document.getElementById('node-'+fromId),toEl=document.getElementById('node-'+toId);if(!fromEl||!toEl)return;const line=new LeaderLine(fromEl,toEl,{startPlug:'behind',endPlug:'behind',path:'fluid',startSocket:'right',endSocket:'left',size:3,gradient:{startColor:'#FFB347',endColor:'#D4870C'}});this.lines.push({id:`${fromId}-${toId}`,line,fromId,toId});this.saveState()},updateAllLines(){this.$nextTick(()=>this.lines.forEach(l=>{try{l.line.position()}catch(e){}}))},updateLinesForNode(nodeId){this.$nextTick(()=>this.lines.forEach(l=>{if(l.fromId===nodeId||l.toId===nodeId)try{l.line.position()}catch(e){}}))},zoomIn(){this.zoomLevel=Math.min(2,this.zoomLevel+0.1);this.updateAllLines()},zoomOut(){this.zoomLevel=Math.max(0.3,this.zoomLevel-0.1);this.updateAllLines()},resetZoom(){this.zoomLevel=1;this.updateAllLines()},copyStepsToWalkthrough(){const stepsText=this.autoGuideSteps.map(step=>`- ${step}`).join('\n');this.labSettings.walkthrough+=(this.labSettings.walkthrough?'\n\n':'')+stepsText;this.saveState()},formatText(type){const textarea=document.getElementById('walkthrough_textarea');const start=textarea.selectionStart,end=textarea.selectionEnd,selected=textarea.value.substring(start,end);let replacement='';switch(type){case'bold':replacement=`**${selected}**`;break;case'italic':replacement=`*${selected}*`;break;case'code':replacement=`\`${selected}\``;break;case'list':replacement=selected.split('\n').map(line=>`- ${line}`).join('\n');break}
+textarea.setRangeText(replacement,start,end,'select');this.labSettings.walkthrough=textarea.value;this.saveState()},getSnapshot(){return JSON.stringify({nodes:this.nodes,lines:this.lines.map(l=>({fromId:l.fromId,toId:l.toId})),labSettings:this.labSettings,nodeIdCounter:this.nodeIdCounter})},saveState(){const snapshot=this.getSnapshot();if(this.undoStack.length>0&&this.undoStack[this.undoStack.length-1]===snapshot)return;this.undoStack.push(snapshot);this.redoStack=[]},loadState(snapshot,fromHistory=false){const data=JSON.parse(snapshot);this.lines.forEach(l=>{try{l.line.remove()}catch(e){}});this.lines=[];this.nodes=(data.nodes||[]).map(n=>({...n,disk:n.disk||'50GB',network:n.network&&n.network.length>0?n.network:[{ip:'',subnet:'',gateway:''}]}));this.labSettings=data.labSettings||this.labSettings;this.nodeIdCounter=data.nodeIdCounter||1;this.$nextTick(()=>{this.reinitInteract();(data.lines||[]).forEach(l=>this.createLine(l.fromId,l.toId));if(!fromHistory)this.saveState()})},undo(){if(this.undoStack.length<=1)return;this.redoStack.push(this.undoStack.pop());this.loadState(this.undoStack[this.undoStack.length-1],true)},redo(){if(this.redoStack.length===0)return;const snapshot=this.redoStack.pop();this.undoStack.push(snapshot);this.loadState(snapshot,true)},handleKeyPress(e){if(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='TEXTAREA')return;if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();this.deleteSelectedNode()}
+if(e.ctrlKey&&e.key==='z'){e.preventDefault();this.undo()}
+if(e.ctrlKey&&e.key==='y'){e.preventDefault();this.redo()}},exportJson(){const dataToExport={labSettings:this.labSettings,topology:{nodes:this.nodes,connections:this.lines.map(l=>({from:l.fromId,to:l.toId}))}};const blob=new Blob([JSON.stringify(dataToExport,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`${this.labSettings.title.replace(/[^a-z0-9]/gi,'_').toLowerCase()||'lab-template'}.json`;a.click();URL.revokeObjectURL(url)},deployLab(){alert('🥐 Baking your lab... (This feature would connect to a backend API)')}}}
+</script>
+</body>
+</html>

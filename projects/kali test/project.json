@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "x": 100.0,
+      "y": 150.0,
+      "name": "Kali Attacker",
+      "icon": "icon-kali",
+      "os": "Kali Linux",
+      "ram": "2GB",
+      "cpu": "2",
+      "disk": "50GB",
+      "scripts": "",
+      "notes": "",
+      "status": "stopped",
+      "network": []
+    }
+  ],
+  "lines": [],
+  "labSettings": {
+    "title": "Final Test Lab",
+    "objectives": "",
+    "walkthrough": "",
+    "difficulty": "Easy",
+    "tags": ""
+  },
+  "nodeIdCounter": 2
+}

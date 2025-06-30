@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LabsBakery – Visually Build & Share Cyber Labs</title>
+    <meta name="description" content="LabsBakery is an open-source visual builder for cybersecurity professionals, students, and educators to create and share complex virtual lab environments with drag-and-drop simplicity.">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥐</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // --- UNIFIED DESIGN SYSTEM ---
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                bakerybg: '#FFF7E1',
+                bakerysoft: '#FFE6B0',
+                bakeryaccent: '#FFB347',
+                bakerydark: '#D4870C',
+                bakerytext: '#3B2F12',
+                bakerytextsoft: '#a97a4e',
+                white: '#ffffff',
+                gray: {
+                    50: '#fafafa',
+                    100: '#f5f5f5',
+                    800: '#2a2a2a',
+                    900: '#1a1a1a',
+                }
+              },
+              fontFamily: { sans: ['Nunito', 'sans-serif'] },
+              boxShadow: {
+                'bakery': '0 8px 30px 0 rgba(200,150,80,0.15)', /* Slightly larger shadow */
+                'bakery-md': '0 4px 16px 0 rgba(200,150,80,0.1)',
+                'bakery-lg': '0 12px 48px 0 rgba(200,150,80,0.2)', /* Larger shadow */
+                'bakery-inner': 'inset 0 2px 4px 0 rgba(200,150,80,0.06)'
+              },
+              animation: {
+                'float-1': 'float 6s ease-in-out infinite',
+                'float-2': 'float 8s ease-in-out infinite',
+                'float-3': 'float 7s ease-in-out infinite',
+                'fade-in-up': 'fadeInUp 0.6s ease-out',
+                'scale-in': 'scaleIn 0.5s ease-out'
+              },
+              keyframes: {
+                float: {
+                  '0%, 100%': { transform: 'translateY(0px)' },
+                  '50%': { transform: 'translateY(-20px)' },
+                },
+                fadeInUp: {
+                    '0%': { opacity: '0', transform: 'translateY(20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                scaleIn: {
+                    '0%': { opacity: '0', transform: 'scale(0.9)' },
+                    '100%': { opacity: '1', transform: 'scale(1)' },
+                }
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+      body { font-family: 'Nunito', sans-serif; background-color: #fafafa; color: #1a1a1a; }
+      .hero-gradient { background: radial-gradient(circle at 50% 0%, #FFF7E1, #fafafa 70%); }
+      .section-title { position: relative; display: inline-block; }
+      .section-title::after { content: ''; display: block; width: 60px; height: 4px; background-color: #FFB347; margin: 10px auto 0; border-radius: 2px; }
+    </style>
+</head>
+<body x-data>
+
+    <!-- HEADER -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-bakery-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="flex items-center gap-2 text-bakerytext font-extrabold text-2xl">
+                <span class="text-3xl">🥐</span> LabsBakery
+            </a>
+            <nav class="hidden md:flex items-center gap-6 font-semibold text-bakerytextsoft">
+                <a href="#features" class="hover:text-bakerydark transition">Features</a>
+                <a href="#how-it-works" class="hover:text-bakerydark transition">How it Works</a>
+                <a href="#testimonials" class="hover:text-bakerydark transition">Testimonials</a>
+                <a href="#" class="hover:text-bakerydark transition">Docs</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                 <a href="dashboard.html" class="px-5 py-2 text-sm bg-white text-bakerydark font-bold rounded-lg shadow-bakery-md hover:border-bakeryaccent transition border border-bakerysoft">
+                    Sign In
+                </a>
+                <a href="dashboard.html" class="hidden sm:block px-5 py-2 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition-all transform hover:scale-105">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="relative hero-gradient pt-32 pb-20 overflow-hidden">
+            <div class="container mx-auto px-6 text-center z-10 relative animate-fade-in-up">
+                <h1 class="text-4xl md:text-6xl font-black text-bakerytext leading-tight max-w-4xl mx-auto">
+                    Bake Complex Cyber Labs. <span class="text-bakerydark">Visually.</span>
+                </h1>
+                <p class="mt-6 text-lg md:text-xl text-bakerytextsoft max-w-2xl mx-auto">
+                    LabsBakery is a free, open-source tool for cybersecurity pros, students, and educators to create and share virtual lab environments with drag-and-drop simplicity.
+                </p>
+                <div class="mt-10 flex justify-center items-center gap-4 animate-scale-in">
+                    <a href="dashboard.html" class="px-8 py-4 bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-lg hover:bg-bakerydark transition-all transform hover:scale-105">
+                        Download for Free
+                    </a>
+                    <a href="#" class="px-8 py-4 bg-white text-bakerydark font-bold rounded-lg shadow-bakery-md hover:border-bakeryaccent transition border border-bakerysoft">
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- Floating Hero Elements -->
+            <div class="absolute inset-0 z-0 select-none opacity-60">
+                <span class="absolute top-1/4 left-1/4 text-5xl opacity-40 animate-float-1">🥖</span>
+                <span class="absolute top-1/3 right-1/4 text-6xl opacity-30 animate-float-2">⚙️</span>
+                <span class="absolute bottom-1/4 left-1/3 text-4xl opacity-50 animate-float-3">🖥️</span>
+                <span class="absolute bottom-1/3 right-1/3 text-5xl opacity-30 animate-float-1">🔗</span>
+            </div>
+        </section>
+
+        <!-- SOCIAL PROOF / WORKS WITH -->
+        <section class="py-12 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <p class="text-center text-bakerytextsoft font-semibold text-lg">
+                    Seamlessly integrates with your existing tools
+                </p>
+                <div class="mt-8 flex justify-center items-center gap-8 md:gap-16 flex-wrap">
+                    <img src="https://cdn.simpleicons.org/kalilinux/666666" class="h-9 opacity-70 hover:opacity-100 transition-opacity" alt="Kali Linux">
+                    <img src="https://cdn.simpleicons.org/windows/666666" class="h-8 opacity-70 hover:opacity-100 transition-opacity" alt="Windows">
+                    <img src="https://cdn.simpleicons.org/ubuntu/666666" class="h-9 opacity-70 hover:opacity-100 transition-opacity" alt="Ubuntu">
+                    <img src="https://cdn.simpleicons.org/docker/666666" class="h-10 opacity-70 hover:opacity-100 transition-opacity" alt="Docker">
+                    <img src="https://cdn.simpleicons.org/virtualbox/666666" class="h-10 opacity-70 hover:opacity-100 transition-opacity" alt="VirtualBox">
+                    <img src="https://cdn.simpleicons.org/pfsense/666666" class="h-7 opacity-70 hover:opacity-100 transition-opacity" alt="pfSense">
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS SECTION -->
+        <section id="how-it-works" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-bakerytext section-title">From Idea to Interactive Lab in 3 Steps</h2>
+                    <p class="mt-6 text-lg text-bakerytextsoft">Stop fighting with complex configurations. LabsBakery simplifies lab creation so you can focus on learning and practicing.</p>
+                </div>
+                <div class="mt-16 grid md:grid-cols-3 gap-12">
+                    <!-- Step 1 -->
+                    <div class="text-center p-6 bg-white rounded-xl shadow-bakery-md border border-bakerysoft animate-fade-in-up" style="--tw-animation-delay: 0.1s;">
+                        <div class="w-20 h-20 bg-bakerysoft rounded-full flex items-center justify-center text-4xl mx-auto shadow-md border-4 border-bakerybg">🍞</div>
+                        <h3 class="mt-6 text-xl font-bold text-bakerytext">1. Choose Ingredients</h3>
+                        <p class="mt-3 text-bakerytextsoft">Drag & drop pre-configured VMs (like Kali, Ubuntu, Windows) and network appliances (routers, firewalls) from a rich palette onto your canvas.</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="text-center p-6 bg-white rounded-xl shadow-bakery-md border border-bakerysoft animate-fade-in-up" style="--tw-animation-delay: 0.2s;">
+                        <div class="w-20 h-20 bg-bakerysoft rounded-full flex items-center justify-center text-4xl mx-auto shadow-md border-4 border-bakerybg">🔗</div>
+                        <h3 class="mt-6 text-xl font-bold text-bakerytext">2. Arrange Your Bake</h3>
+                        <p class="mt-3 text-bakerytextsoft">Visually connect components to define network topology. Configure each piece with custom IPs, scripts, and settings directly on the canvas.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="text-center p-6 bg-white rounded-xl shadow-bakery-md border border-bakerysoft animate-fade-in-up" style="--tw-animation-delay: 0.3s;">
+                        <div class="w-20 h-20 bg-bakerysoft rounded-full flex items-center justify-center text-4xl mx-auto shadow-md border-4 border-bakerybg">🚀</div>
+                        <h3 class="mt-6 text-xl font-bold text-bakerytext">3. Serve & Share</h3>
+                        <p class="mt-3 text-bakerytextsoft">Deploy your lab locally with one click using VirtualBox or Docker. Export the configuration as a portable JSON file to share your creations easily.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES SECTION -->
+        <section id="features" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6 space-y-24">
+                 <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-bakerytext section-title">Powerful Features for Seamless Lab Building</h2>
+                    <p class="mt-6 text-lg text-bakerytextsoft">LabsBakery provides everything you need to design, deploy, and share complex cybersecurity environments.</p>
+                </div>
+
+                <!-- Feature 1: Visual Canvas -->
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="animate-fade-in-up">
+                        <span class="font-bold text-bakerydark text-sm">VISUAL CANVAS</span>
+                        <h3 class="mt-2 text-3xl font-extrabold text-bakerytext">Your Lab, Your Canvas.</h3>
+                        <p class="mt-4 text-lg text-bakerytextsoft">Finally see your lab's architecture instead of imagining it. Drag, drop, and connect virtual machines and network devices with intuitive ease. Understand complex network flows at a glance, making setup, troubleshooting, and teaching dramatically easier.</p>
+                        <ul class="mt-6 space-y-3 text-bakerytext/90">
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Intuitive drag-and-drop interface</li>
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Clear visual representation of network topology</li>
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Easy configuration of individual components</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-bakery-lg border border-bakerysoft animate-scale-in">
+                        <!-- Placeholder for a more detailed/modern screenshot -->
+                        <img src="https://i.imgur.com/k2tD2XJ.png" alt="Visual Lab Builder Interface Screenshot" class="rounded-lg border border-bakerysoft">
+                    </div>
+                </div>
+
+                <!-- Feature 2: Recipe Book -->
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                     <div class="bg-white p-4 rounded-xl shadow-bakery-lg border border-bakerysoft md:order-last animate-scale-in">
+                        <!-- Placeholder for a more detailed/modern screenshot -->
+                        <img src="https://i.imgur.com/gK4E8s5.png" alt="Recipe Book Interface Screenshot" class="rounded-lg border border-bakerysoft">
+                    </div>
+                    <div class="animate-fade-in-up">
+                        <span class="font-bold text-bakerydark text-sm">RECIPE BOOK</span>
+                        <h3 class="mt-2 text-3xl font-extrabold text-bakerytext">Start from a Proven Recipe.</h3>
+                        <p class="mt-4 text-lg text-bakerytextsoft">Don't start from scratch. Explore and clone labs from a community-driven Recipe Book. Access classic setups like "Kali + Metasploitable", complex Active Directory environments, or specialized labs for specific exploit techniques. Learn by dissecting existing bakes.</p>
+                         <ul class="mt-6 space-y-3 text-bakerytext/90">
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Browse and clone community-contributed labs</li>
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Quickly deploy complex environments</li>
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Learn from expert-designed lab topologies</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Open & Extensible -->
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="animate-fade-in-up">
+                        <span class="font-bold text-bakerydark text-sm">OPEN & EXTENSIBLE</span>
+                        <h3 class="mt-2 text-3xl font-extrabold text-bakerytext">Open Source. Limitless Potential.</h3>
+                        <p class="mt-4 text-lg text-bakerytextsoft">Built for the community, by the community. LabsBakery is 100% open source, runs locally on your machine, and exports to a clean, human-readable JSON format. Customize, extend, and integrate with your own tools. No vendor lock-in, ever.</p>
+                         <ul class="mt-6 space-y-3 text-bakerytext/90">
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Fully open-source and free to use</li>
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Local deployment (VirtualBox, Docker)</li>
+                            <li class="flex items-center gap-2"><span class="text-bakeryaccent">✓</span> Portable JSON lab configurations</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-900 p-6 rounded-xl shadow-bakery-lg animate-scale-in">
+                        <pre><code class="text-gray-300 language-json"><span class="text-bakerysoft">"title"</span>: <span class="text-bakeryaccent">"AD Playground"</span>,
+<span class="text-bakerysoft">"nodes"</span>: [
+  { <span class="text-bakerysoft">"name"</span>: <span class="text-bakeryaccent">"Domain Controller"</span>, <span class="text-bakerysoft">"os"</span>: <span class="text-bakeryaccent">"Windows Server"</span>, <span class="text-bakerysoft">"ip"</span>: <span class="text-bakeryaccent">"192.168.1.10"</span> },
+  { <span class="text-bakerysoft">"name"</span>: <span class="text-bakeryaccent">"Workstation"</span>, <span class="text-bakerysoft">"os"</span>: <span class="text-bakeryaccent">"Windows 10"</span>, <span class="text-bakerysoft">"ip"</span>: <span class="text-bakeryaccent">"192.168.1.50"</span> },
+  { <span class="text-bakerysoft">"name"</span>: <span class="text-bakeryaccent">"Kali Attacker"</span>, <span class="text-bakerysoft">"os"</span>: <span class="text-bakeryaccent">"Kali Linux"</span>, <span class="text-bakerysoft">"ip"</span>: <span class="text-bakeryaccent">"192.168.1.100"</span> }
+],
+<span class="text-bakerysoft">"connections"</span>: [
+  { <span class="text-bakerysoft">"from"</span>: <span class="text-bakeryaccent">"Domain Controller"</span>, <span class="text-bakerysoft">"to"</span>: <span class="text-bakeryaccent">"Workstation"</span> },
+  { <span class="text-bakerysoft">"from"</span>: <span class="text-bakeryaccent">"Domain Controller"</span>, <span class="text-bakerysoft">"to"</span>: <span class="text-bakeryaccent">"Kali Attacker"</span> }
+]</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONIALS SECTION -->
+        <section id="testimonials" class="py-20">
+            <div class="container mx-auto px-6">
+                 <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-bakerytext section-title">Loved by Bakers of All Kinds</h2>
+                </div>
+                <div class="mt-16 grid md:grid-cols-3 gap-8">
+                    <!-- Testimonial 1 -->
+                    <div class="bg-white p-8 rounded-xl shadow-bakery border border-bakerysoft animate-fade-in-up" style="--tw-animation-delay: 0.1s;">
+                        <p class="text-bakerytext text-lg italic">"This is what I've been missing for my OSCP prep. Spinning up and tearing down custom practice environments is now trivial. The visual aspect is a game-changer for planning attack paths."</p>
+                        <div class="mt-6 flex items-center gap-4">
+                            <span class="w-14 h-14 bg-bakerybg rounded-full flex items-center justify-center text-3xl shadow-bakery-md">👨‍💻</span>
+                            <div>
+                                <p class="font-bold text-bakerytext">Alex R.</p>
+                                <p class="text-sm text-bakerytextsoft">Pentester</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Testimonial 2 -->
+                    <div class="bg-white p-8 rounded-xl shadow-bakery border border-bakerysoft animate-fade-in-up" style="--tw-animation-delay: 0.2s;">
+                        <p class="text-bakerytext text-lg italic">"As an educator, I can finally create and share consistent lab environments with all my students. LabsBakery has saved me countless hours of support and setup time. Highly recommended!"</p>
+                        <div class="mt-6 flex items-center gap-4">
+                            <span class="w-14 h-14 bg-bakerybg rounded-full flex items-center justify-center text-3xl shadow-bakery-md">👩‍🏫</span>
+                            <div>
+                                <p class="font-bold text-bakerytext">Dr. Chen</p>
+                                <p class="text-sm text-bakerytextsoft">Cybersecurity Professor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Testimonial 3 -->
+                    <div class="bg-white p-8 rounded-xl shadow-bakery border border-bakerysoft animate-fade-in-up" style="--tw-animation-delay: 0.3s;">
+                        <p class="text-bakerytext text-lg italic">"I'm just starting in cybersecurity, and LabsBakery made it so easy to understand how different machines talk to each other. Cloning a recipe and just exploring is the best way to learn."</p>
+                        <div class="mt-6 flex items-center gap-4">
+                            <span class="w-14 h-14 bg-bakerybg rounded-full flex items-center justify-center text-3xl shadow-bakery-md">🎓</span>
+                            <div>
+                                <p class="font-bold text-bakerytext">Samira K.</p>
+                                <p class="text-sm text-bakerytextsoft">Student</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FINAL CTA SECTION -->
+        <section class="py-20 hero-gradient">
+            <div class="container mx-auto px-6 text-center animate-fade-in-up">
+                 <h2 class="text-3xl md:text-4xl font-extrabold text-bakerytext max-w-2xl mx-auto">Ready to Start Baking Your Labs?</h2>
+                 <p class="mt-4 text-lg text-bakerytextsoft max-w-2xl mx-auto">
+                    Download LabsBakery today. It's free, open-source, and ready to become the most valuable tool in your cybersecurity toolkit.
+                </p>
+                <div class="mt-8 animate-scale-in">
+                     <a href="dashboard.html" class="px-8 py-4 bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-lg hover:bg-bakerydark transition-all transform hover:scale-105 inline-block">
+                        Get Started for Free
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-gray-400">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold text-white text-lg">LabsBakery</h4>
+                    <p class="mt-2 text-sm">Bake Complex Cyber Labs. Visually.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white text-lg">Product</h4>
+                    <nav class="mt-4 space-y-2 text-sm">
+                        <a href="#features" class="block hover:text-white transition">Features</a>
+                        <a href="#" class="block hover:text-white transition">Download</a>
+                        <a href="#" class="block hover:text-white transition">Changelog</a>
+                    </nav>
+                </div>
+                 <div>
+                    <h4 class="font-bold text-white text-lg">Community</h4>
+                    <nav class="mt-4 space-y-2 text-sm">
+                        <a href="#" class="block hover:text-white transition">GitHub</a>
+                        <a href="#" class="block hover:text-white transition">Discord</a>
+                        <a href="#" class="block hover:text-white transition">Docs</a>
+                    </nav>
+                </div>
+                 <div>
+                    <h4 class="font-bold text-white text-lg">Legal</h4>
+                    <nav class="mt-4 space-y-2 text-sm">
+                        <a href="#" class="block hover:text-white transition">Privacy Policy</a>
+                        <a href="#" class="block hover:text-white transition">Terms of Service</a>
+                    </nav>
+                </div>
+            </div>
+            <div class="mt-10 border-t border-gray-800 pt-6 text-center text-sm text-gray-500">
+                <p>© 2024 LabsBakery. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

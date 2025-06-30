@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" x-data="labsBakeryDashboard()" x-init="init()" class="antialiased bg-bakerybg min-h-screen">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LabsBakery – Dashboard</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥐</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // --- UNIFIED DESIGN SYSTEM ---
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                bakerybg: '#FFF7E1',
+                bakerysoft: '#FFE6B0',
+                bakeryaccent: '#FFB347',
+                bakerydark: '#D4870C',
+                bakerytext: '#3B2F12',
+                bakerytextsoft: '#a97a4e',
+                white: '#ffffff',
+                gray: {
+                    50: '#fafafa',
+                    100: '#f5f5f5',
+                    800: '#2a2a2a',
+                    900: '#1a1a1a',
+                }
+              },
+              fontFamily: { sans: ['Nunito', 'sans-serif'] },
+              boxShadow: {
+                'bakery': '0 8px 30px 0 rgba(200,150,80,0.15)',
+                'bakery-md': '0 4px 16px 0 rgba(200,150,80,0.1)',
+                'bakery-lg': '0 12px 48px 0 rgba(200,150,80,0.2)',
+                'bakery-inner': 'inset 0 2px 4px 0 rgba(200,150,80,0.06)'
+              },
+               animation: {
+                'float-1': 'float 6s ease-in-out infinite',
+                'float-2': 'float 8s ease-in-out infinite',
+                'float-3': 'float 7s ease-in-out infinite',
+                'fade-in-up': 'fadeInUp 0.6s ease-out',
+                'scale-in': 'scaleIn 0.5s ease-out'
+              },
+              keyframes: {
+                float: {
+                  '0%, 100%': { transform: 'translateY(0px)' },
+                  '50%': { transform: 'translateY(-20px)' },
+                },
+                 fadeInUp: {
+                    '0%': { opacity: '0', transform: 'translateY(20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                scaleIn: {
+                    '0%': { opacity: '0', transform: 'scale(0.9)' },
+                    '100%': { opacity: '1', transform: 'scale(1)' },
+                }
+              }
+            }
+          }
+        }
+    </script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+      /* --- UNIFIED BASE STYLES --- */
+      body { font-family: 'Nunito', sans-serif; color: #3B2F12; }
+       .section-title { position: relative; display: inline-block; }
+      .section-title::after { content: ''; display: block; width: 60px; height: 4px; background-color: #FFB347; margin: 10px auto 0; border-radius: 2px; }
+    </style>
+</head>
+<body class="bg-bakerybg min-h-screen text-bakerytext">
+
+    <!-- HEADER -->
+    <header class="flex-shrink-0 flex items-center justify-between px-6 py-3 bg-gradient-to-b from-bakerysoft to-bakerybg shadow-md gap-4 z-30">
+        <!-- Left: Logo -->
+        <a href="dashboard.html" class="flex items-center gap-2 text-bakerytext font-extrabold text-2xl">
+            <span class="text-3xl">🥐</span>
+            <span class="hidden sm:inline">LabsBakery</span>
+        </a>
+
+        <!-- Center: Main Navigation -->
+        <nav class="hidden md:flex items-center gap-6">
+            <a href="dashboard.html" class="text-bakerydark font-bold">Dashboard</a>
+            <a href="recipe_book.html" class="text-bakerytextsoft font-semibold hover:text-bakerydark transition">Recipe Book</a>
+        </nav>
+
+        <!-- Right: User Menu & Main Action -->
+        <div class="flex items-center gap-4">
+            <!-- User Dropdown -->
+            <div x-data="{ isProfileMenuOpen: false }" class="relative">
+                <button @click="isProfileMenuOpen = !isProfileMenuOpen" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-bakery-md border border-bakerysoft hover:border-bakeryaccent transition">
+                    🧑‍🍳
+                </button>
+                <div x-show="isProfileMenuOpen"
+                     @click.away="isProfileMenuOpen = false"
+                     x-transition
+                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-bakery border border-bakerysoft py-1 z-40">
+                    <a href="profile.html" class="block px-4 py-2 text-sm text-bakerytext hover:bg-bakerybg">My Profile</a>
+                    <a href="settings.html" class="block px-4 py-2 text-sm text-bakerytext hover:bg-bakerybg">Settings</a>
+                    <div class="my-1 h-px bg-bakerysoft"></div>
+                    <a href="#" class="block px-4 py-2 text-sm text-bakerytextsoft hover:bg-bakerybg">Sign Out</a>
+                </div>
+            </div>
+
+            <!-- Main action button -->
+            <button @click="bakeNewLab()" class="px-5 py-2 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition-all transform hover:scale-105 flex items-center gap-1.5">
+                <span class="text-base">🍞</span>
+                <span class="hidden sm:inline">Bake New Lab</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+
+        <!-- WELCOME HEADER -->
+        <div class="mb-10 animate-fade-in-up">
+            <h1 class="text-3xl font-extrabold text-bakerytext">Welcome Back, Baker!</h1>
+            <p class="text-bakerytextsoft mt-1 text-lg">Ready to get cooking? Here's a quick start guide and your current bakes.</p>
+        </div>
+
+        <!-- QUICK START GUIDE -->
+        <section class="flex flex-col md:flex-row gap-8 items-center bg-white border-2 border-bakerysoft rounded-2xl shadow-bakery p-6 mb-12 animate-fade-in-up">
+            <div class="flex-shrink-0 w-full md:w-1/2 aspect-video bg-bakerysoft rounded-xl flex items-center justify-center overflow-hidden">
+                 <!-- Placeholder for a more engaging image/gif -->
+                 <img src="https://i.imgur.com/k2tD2XJ.png" alt="LabsBakery Quick Start Visual" class="w-full h-full object-cover object-center">
+            </div>
+            <div class="flex-1 w-full">
+                <h2 class="text-2xl font-extrabold text-bakerytext mb-4">How to Bake a Lab 🧑‍🍳</h2>
+                <ol class="list-decimal pl-5 space-y-2 text-base text-bakerytext/90">
+                    <li>Click <span class="font-bold text-bakerydark">“Bake New Lab”</span> to open the builder.</li>
+                    <li>Drag your favorite ingredients (VMs) onto the baking sheet.</li>
+                    <li>Connect them, configure settings, and give your lab a name.</li>
+                    <li>Click the <span class="font-bold text-bakerydark">"Bake Lab"</span> button to save and deploy!</li>
+                </ol>
+                <a href="#" class="inline-block mt-6 px-5 py-2 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition-all transform hover:scale-105">
+                    Read Full Guide
+                </a>
+            </div>
+        </section>
+
+
+        <!-- MY BAKES (LABS) -->
+        <section class="mb-12 animate-fade-in-up">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <h2 class="text-2xl font-extrabold text-bakerytext flex items-center gap-2">My Bakes <span class="text-xl">🥐</span></h2>
+                <div class="flex gap-2 p-1 bg-bakerybg rounded-full border border-bakerysoft shadow-inner flex-shrink-0">
+                    <template x-for="(tab, i) in tabs" :key="i">
+                        <button
+                            :class="`px-4 py-1 rounded-full font-semibold transition-colors text-sm ${
+                                currentTab === tab
+                                    ? 'bg-white text-bakerydark shadow-sm'
+                                    : 'text-bakerytextsoft hover:text-bakerydark'
+                            }`"
+                            @click="currentTab = tab"
+                            x-text="tab"
+                        ></button>
+                    </template>
+                </div>
+            </div>
+            <template x-if="labs[currentTab].length === 0">
+                <div class="text-center py-12 bg-white/50 border-2 border-dashed border-bakerysoft rounded-2xl text-bakerytextsoft shadow-bakery-md">
+                    <span class="text-5xl mx-auto mb-4 opacity-70">🍩</span>
+                    <p class="font-semibold text-lg">No bakes in this category yet.</p>
+                    <p class="mt-2">Start by <button class="font-bold text-bakeryaccent hover:underline" @click="bakeNewLab()">baking your first lab</button>!</p>
+                </div>
+            </template>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" x-show="labs[currentTab].length > 0">
+                <template x-for="(lab, idx) in labs[currentTab]" :key="lab.id">
+                    <div class="bg-white rounded-xl p-5 flex flex-col justify-between hover:shadow-bakery transition-all border-2 border-bakerysoft hover:border-bakeryaccent animate-scale-in">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-4xl" x-text="lab.icon"></span>
+                                    <h3 class="font-bold text-lg text-bakerytext leading-tight" x-text="lab.name"></h3>
+                                </div>
+                                <span x-text="lab.statusIcon" class="text-2xl flex-shrink-0" :title="currentTab"></span>
+                            </div>
+                            <p class="text-sm text-bakerytextsoft mb-4 h-12 overflow-hidden" x-text="lab.desc"></p>
+                            <div class="flex gap-2 flex-wrap mb-4">
+                                <span class="bg-bakerybg text-bakerydark px-2.5 py-1 rounded-md text-xs font-semibold" x-text="`${lab.vms} VMs`"></span>
+                                <span class="bg-bakerybg text-bakerydark px-2.5 py-1 rounded-md text-xs font-semibold" x-text="`${lab.ram} RAM`"></span>
+                                <span class="bg-bakerybg text-bakerydark px-2.5 py-1 rounded-md text-xs font-semibold" x-text="`${lab.connections} Connections`"></span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-auto pt-4 border-t border-bakerysoft">
+                            <button class="flex-1 px-4 py-2 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition">Edit</button>
+                            <button class="flex-1 px-4 py-2 text-sm bg-white rounded-lg shadow-bakery-md font-semibold hover:bg-bakerybg transition border border-bakerysoft">Serve</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- EXAMPLE LABS (RECIPE BOOK) -->
+        <section animate-fade-in-up>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-extrabold text-bakerytext flex items-center gap-2">Recipe Book <span class="text-xl">📖</span></h2>
+                 <a href="recipe_book.html" class="text-bakeryaccent font-semibold hover:underline text-sm">View All Recipes</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="(lab, idx) in exampleLabs" :key="lab.id">
+                    <div class="bg-bakerybg rounded-xl p-5 flex flex-col justify-between hover:shadow-bakery transition-all border-2 border-bakerysoft hover:border-bakeryaccent animate-scale-in">
+                         <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-4xl" x-text="lab.icon"></span>
+                                    <h3 class="font-bold text-lg text-bakerytext leading-tight" x-text="lab.name"></h3>
+                                </div>
+                            </div>
+                            <p class="text-sm text-bakerytextsoft mb-4 h-12 overflow-hidden" x-text="lab.desc"></p>
+                            <div class="flex gap-2 flex-wrap mb-4">
+                                <span class="bg-white text-bakerydark px-2.5 py-1 rounded-md text-xs font-semibold" x-text="`${lab.vms} VMs`"></span>
+                                <span class="bg-white text-bakerydark px-2.5 py-1 rounded-md text-xs font-semibold" x-text="lab.level"></span>
+                                <span class="bg-white text-bakerydark px-2.5 py-1 rounded-md text-xs font-semibold" x-text="`${lab.connections} Connections`"></span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-auto pt-4 border-t border-bakerysoft">
+                            <button class="flex-1 px-4 py-2 text-sm bg-white rounded-lg shadow-bakery-md font-semibold hover:bg-bakerysoft transition border border-bakerysoft">Preview</button>
+                            <button class="flex-1 px-4 py-2 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition">Clone</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+    </main>
+
+    <!-- Confetti when baking a new lab -->
+    <div x-show="showConfetti" x-transition class="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
+        <div class="text-8xl animate-bounce">🎉</div>
+    </div>
+
+    <script>
+        function labsBakeryDashboard() {
+            return {
+                isProfileMenuOpen: false, // For the new dropdown
+                tabs: ["Drafts", "In Oven", "Served Hot"],
+                currentTab: "Drafts",
+                labs: {
+                    "Drafts": [
+                        {id: 1, name: "Pentest Playground", desc: "A classic environment with Kali and a vulnerable target.", icon: "🥖", vms: 2, ram: "4 GB", connections: 1, statusIcon: "✏️"},
+                        {id: 2, name: "Active Directory Lab", desc: "Practice AD attacks against a Windows Server and clients.", icon: "🥐", vms: 3, ram: "8 GB", connections: 2, statusIcon: "✏️"}
+                    ],
+                    "In Oven": [
+                        {id: 3, name: "Blue Team Arena", desc: "A network with a SIEM for detecting live attacks.", icon: "🥯", vms: 4, ram: "12 GB", connections: 3, statusIcon: "🔥"}
+                    ],
+                    "Served Hot": [
+                         {id: 4, name: "Web App Security Lab", desc: "Explore common web vulnerabilities in a controlled environment.", icon: "🥨", vms: 2, ram: "4 GB", connections: 1, statusIcon: "✅"}
+                    ]
+                },
+                exampleLabs: [
+                    {id: 'e1', name: "Kali + Metasploitable", desc: "The perfect starting point for learning pentesting.", icon: "🥨", vms: 2, level: "Easy", connections: 1},
+                    {id: 'e2', name: "AD Kerberos Attacks", desc: "A pre-configured lab to practice Kerberoasting.", icon: "🥖", vms: 3, level: "Medium", connections: 2},
+                    {id: 'e3', name: "Web App Security", desc: "Includes multiple web servers with common vulnerabilities.", icon: "🥯", vms: 4, level: "Hard", connections: 3},
+                ],
+                showConfetti: false,
+                bakeNewLab() {
+                    this.showConfetti = true;
+                    setTimeout(() => {
+                        this.showConfetti = false;
+                        // This would redirect to the builder page
+                        window.location.href = "lab_builder.html";
+                    }, 1200);
+                },
+                init() {
+                    // Any setup needed on load
+                }
+            }
+        }
+    </script>
+</body>
+</html>

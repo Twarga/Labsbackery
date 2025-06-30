@@ -1,0 +1,86 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box_check_update = false
+
+  
+  config.vm.define "kali-attacker" do |node|
+    node.vm.box = "kalilinux/rolling"
+    node.vm.hostname = "kali-attacker"
+
+    
+    node.vm.network "private_network", virtualbox__intnet: "bakery_net_0", auto_config: false
+    
+
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "Kali Attacker"
+      vb.memory = "2048"
+      vb.cpus = 2
+    end
+
+    
+    node.vm.provision "shell", inline: <<-SHELL
+      echo "--- Running user-provided boot scripts ---"
+      apt-get update
+    SHELL
+    
+  end
+  
+  config.vm.define "ubuntu-webserv" do |node|
+    node.vm.box = "ubuntu/jammy64"
+    node.vm.hostname = "ubuntu-webserv"
+
+    
+    node.vm.network "private_network", virtualbox__intnet: "bakery_net_0", auto_config: false
+    
+
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "Ubuntu WebServ"
+      vb.memory = "1024"
+      vb.cpus = 1
+    end
+
+    
+    node.vm.provision "shell", inline: <<-SHELL
+      echo "--- Running user-provided boot scripts ---"
+      apt-get install -y nginx
+    SHELL
+    
+  end
+  
+  config.vm.define "win10-client" do |node|
+    node.vm.box = "gusztavvargadr/windows-10"
+    node.vm.hostname = "win10-client"
+
+    
+    node.vm.network "private_network", virtualbox__intnet: "bakery_net_1", auto_config: false
+    
+
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "Win10 Client"
+      vb.memory = "4096"
+      vb.cpus = 2
+    end
+
+    
+  end
+  
+  config.vm.define "metasploitable-target" do |node|
+    node.vm.box = "rapid7/metasploitable3-ub1404"
+    node.vm.hostname = "metasploitable-target"
+
+    
+    node.vm.network "private_network", virtualbox__intnet: "bakery_net_1", auto_config: false
+    
+
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "Metasploitable Target"
+      vb.memory = "512"
+      vb.cpus = 1
+    end
+
+    
+  end
+  
+end

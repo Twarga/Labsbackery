@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased bg-bakerybg min-h-screen">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Profile – LabsBakery</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥐</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // --- UNIFIED DESIGN SYSTEM ---
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                bakerybg: '#FFF7E1',
+                bakerysoft: '#FFE6B0',
+                bakeryaccent: '#FFB347',
+                bakerydark: '#D4870C',
+                bakerytext: '#3B2F12',
+                bakerytextsoft: '#a97a4e',
+              },
+              fontFamily: { sans: ['Nunito', 'sans-serif'] },
+              boxShadow: {
+                'bakery': '0 4px 24px 0 rgba(200,150,80,0.12)',
+                'bakery-md': '0 2px 12px 0 rgba(200,150,80,0.1)',
+              },
+            }
+          }
+        }
+    </script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+      /* --- UNIFIED BASE STYLES --- */
+      body { font-family: 'Nunito', sans-serif; color: #3B2F12; }
+    </style>
+</head>
+<body class="bg-bakerybg min-h-screen text-bakerytext" x-data="profilePage()">
+
+<!-- HEADER: Consistent across all pages -->
+<header class="flex-shrink-0 flex items-center justify-between px-6 py-3 bg-gradient-to-b from-bakerysoft to-bakerybg shadow-md gap-4 z-20 mb-10">
+    <a href="dashboard.html" class="flex items-center gap-2 text-bakerytext font-extrabold text-2xl">
+        <span class="text-3xl">🥐</span> LabsBakery
+    </a>
+    <div class="flex-1 text-center">
+        <h1 class="text-xl font-bold text-bakerytext">Profile</h1>
+    </div>
+    <div class="w-48 text-right"> <!-- Placeholder for alignment -->
+        <a href="settings.html" class="text-bakerytextsoft hover:text-bakerydark transition text-2xl" title="Settings">⚙️</a>
+    </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-8 items-start">
+    <!-- PROFILE PANEL -->
+    <aside class="md:w-1/3 w-full bg-white rounded-2xl shadow-bakery p-6 flex flex-col gap-4 mb-6 md:mb-0 border-2 border-bakerysoft">
+        <div class="flex flex-col items-center text-center">
+            <span class="text-6xl mb-2">🧑‍🍳</span>
+            <input x-model="nickname" class="text-2xl font-extrabold text-center bg-bakerybg rounded-lg px-3 py-1 mb-1 border-2 border-transparent focus:border-bakerysoft focus:outline-none w-full transition" />
+            <textarea x-model="bio" class="text-sm text-bakerytextsoft text-center bg-bakerybg rounded-lg px-2 py-1 mb-2 border-2 border-transparent focus:border-bakerysoft focus:outline-none w-full resize-none transition" rows="2" placeholder="A little about you…"></textarea>
+        </div>
+        <div class="flex justify-around border-t border-b border-bakerysoft py-4 my-2">
+            <div class="text-center">
+                <div class="font-extrabold text-bakerydark text-xl" x-text="stats.labs"></div>
+                <div class="text-xs font-bold text-bakerytextsoft uppercase">Labs</div>
+            </div>
+            <div class="text-center">
+                <div class="font-extrabold text-bakerydark text-xl" x-text="stats.vms"></div>
+                <div class="text-xs font-bold text-bakerytextsoft uppercase">VMs</div>
+            </div>
+            <div class="text-center">
+                <div class="font-extrabold text-bakerydark text-xl" x-text="stats.ram + ' GB'"></div>
+                <div class="text-xs font-bold text-bakerytextsoft uppercase">Total RAM</div>
+            </div>
+        </div>
+        <div class="flex flex-col gap-2">
+            <button class="bg-bakeryaccent hover:bg-bakerydark text-white rounded-lg font-bold py-2 transition shadow-bakery-md" @click="saveProfile()">Save Profile</button>
+            <button class="bg-white hover:bg-bakerybg text-bakerydark rounded-lg font-semibold py-2 transition border border-bakerysoft" @click="logout()">Log Out</button>
+        </div>
+        <div class="mt-2 text-xs text-bakerytextsoft text-center">Last active: <span x-text="stats.lastActive"></span></div>
+    </aside>
+    
+    <!-- RECENT LABS -->
+    <section class="flex-1">
+        <h2 class="text-2xl font-extrabold mb-4 text-bakerytext flex items-center gap-2">Your Bakes <span>🍞</span></h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <template x-for="lab in labs" :key="lab.id">
+                <div class="bg-white rounded-xl p-4 flex flex-col justify-between hover:shadow-bakery transition-all border-2 border-bakerysoft hover:border-bakeryaccent">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl" x-text="lab.icon"></span>
+                                <h3 class="font-bold text-lg text-bakerytext leading-tight" x-text="lab.name"></h3>
+                            </div>
+                            <span class="px-2 py-0.5 text-xs font-bold rounded-full"
+                                :class="{
+                                    'bg-bakerybg text-bakerydark': lab.status==='Draft',
+                                    'bg-yellow-100 text-yellow-800': lab.status==='In Oven',
+                                    'bg-green-100 text-green-800': lab.status==='Served'
+                                }"
+                                x-text="lab.status"></span>
+                        </div>
+                        <p class="text-sm text-bakerytextsoft mb-4 h-10" x-text="lab.desc"></p>
+                         <div class="flex gap-2 flex-wrap mb-4">
+                            <span class="bg-bakerybg text-bakerydark px-2 py-0.5 rounded-md text-xs font-semibold" x-text="`${lab.vms} VMs`"></span>
+                            <span class="bg-bakerybg text-bakerydark px-2 py-0.5 rounded-md text-xs font-semibold" x-text="`${lab.ram} GB RAM`"></span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-auto">
+                        <button class="flex-1 px-3 py-1.5 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition">View</button>
+                        <button class="flex-1 px-3 py-1.5 text-sm bg-white rounded-lg shadow-bakery-md font-semibold hover:bg-bakerybg transition border border-bakerysoft">Edit</button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <div x-show="labs.length === 0" class="text-center py-12 bg-white/50 border-2 border-dashed border-bakerysoft rounded-2xl text-bakerytextsoft">
+            <span class="text-4xl mx-auto mb-3 opacity-70">🍩</span>
+            <p class="font-semibold">No labs yet. <a href="dashboard.html" class="text-bakeryaccent font-bold hover:underline">Start baking!</a></p>
+        </div>
+    </section>
+</main>
+<script>
+function profilePage() {
+    return {
+        nickname: "Bakery Hacker",
+        bio: "I love baking cyber labs!",
+        stats: {
+            labs: 3,
+            vms: 7,
+            ram: 12,
+            lastActive: "2025-06-21"
+        },
+        labs: [
+            {id: 1, icon: '🥖', name: "Kali + Metasploitable", desc: "Pentest basics lab.", vms: 2, ram: 4, status: "Draft"},
+            {id: 2, icon: '🥐', name: "AD Playground", desc: "Active Directory attack practice.", vms: 3, ram: 6, status: "In Oven"},
+            {id: 3, icon: '🥯', name: "SOC Mini-Lab", desc: "SIEM + vulnerable hosts.", vms: 2, ram: 2, status: "Served"},
+        ],
+        saveProfile() {
+            alert("Profile saved! (This would connect to a backend)");
+        },
+        logout() {
+            alert("Logged out!");
+        }
+    }
+}
+</script>
+</body>
+</html>

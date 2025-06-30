@@ -1,0 +1,34 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "x": 100.95652199575557,
+      "y": 264.70652199575557,
+      "name": "Kali Linux 1",
+      "icon": "data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHJvbGU9ImltZyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+S2FsaSBMaW51eDwvdGl0bGU+PHBhdGggZD0iTTEyLjc3MyAwaC0uMDM0Yy0uMzI3LjAxMy0uNjEyLjA3My0uNzgzLjEwMy0xLjM5OS4zMzQtMi4yNzIgMS40NjgtMi4xMTkgMi44ODhsLjU0NyA0LjgyNmMxLjM5OS0uNzc2IDIuODYtMS4wMSA0LjM2NC0uNzQxLjQzMy4wNzMuODU0LjIwMyAxLjI2My40MDkuNTQ3LjI3LjcxOC44NDEgMS4wMjYgMS41NDRsLjU0NyAyLjA5NmMuMzk4IDEuMzY0LjEwOSAyLjY5Mi0uNzMyIDMuNzQxLS45NDggMS4yMS0yLjMyOSAxLjg4OS0zLjgxMSAxLjg4OWgtMS45MzljLS4xMDkgMC0uMTk0LjA1OC0uMjM4LjA4OGwtNS4wNDggNy4zNDhjLS4yMDQuMjk4LS4xMi43MzUuMjA0IDEuMDM0LjM1My4yOTguODM4LjM2NyAxLjI2My4xNDZsNC4wNDctMi4yMDVjLjE1LS4wNzQuMjM4LS4yNTMuMi0uNDE0bC0uNTEyLTEuOTExYy0uMTE1LS40NDUuMDk1LS45MDguNTEyLTEuMTY2Ljg5NS0uNTY4IDEuOTk2LS43NDEgMy4wNDItLjQxNCAxLjE1NS4zNTQgMi4wOTUgMS4yMjIgMi41MjkgMi4zNTNsLjMyNy44ODFjLjIwNC41NTUuNzc4Ljg1NCAxLjM1NS43NTQuNjEtLjA4OCAxLjAyNi0uNTU1LDEuMTQtMS4xNTNsMS44NTMtNC4yMWMxLjE4LTEuOTEgMS4yMDMtMy41Ni4zOTgtNC44OTctLjY4LTEuMjM2LTEuNzcyLTIuMDEyLTMuMDk5LTIuMzgybC0uNTEyLTEuODk5Yy0uNDE0LTEuNjU5LTEuNTgzLTIuNzY2LTMuMjM2LTIuOTI2eiIvPjwvc3ZnPg==",
+      "os": "Kali Linux",
+      "ram": "2GB",
+      "cpu": "2",
+      "disk": "50GB",
+      "scripts": "",
+      "notes": "",
+      "status": "not created",
+      "network": [
+        {
+          "ip": "",
+          "subnet": "",
+          "gateway": ""
+        }
+      ]
+    }
+  ],
+  "lines": [],
+  "labSettings": {
+    "title": "New-Cyber-Lab",
+    "objectives": "",
+    "walkthrough": "",
+    "difficulty": "Easy",
+    "tags": ""
+  },
+  "nodeIdCounter": 2
+}

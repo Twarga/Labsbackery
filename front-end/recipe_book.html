@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased bg-bakerybg min-h-screen">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Recipe Book – LabsBakery</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥐</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // --- UNIFIED DESIGN SYSTEM ---
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                bakerybg: '#FFF7E1',
+                bakerysoft: '#FFE6B0',
+                bakeryaccent: '#FFB347',
+                bakerydark: '#D4870C',
+                bakerytext: '#3B2F12',
+                bakerytextsoft: '#a97a4e',
+              },
+              fontFamily: { sans: ['Nunito', 'sans-serif'] },
+              boxShadow: {
+                'bakery': '0 4px 24px 0 rgba(200,150,80,0.12)',
+                'bakery-md': '0 2px 12px 0 rgba(200,150,80,0.1)',
+              },
+            }
+          }
+        }
+    </script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+      /* --- UNIFIED BASE STYLES --- */
+      body { font-family: 'Nunito', sans-serif; color: #3B2F12; }
+    </style>
+</head>
+<body class="bg-bakerybg min-h-screen text-bakerytext" x-data="recipeBook()">
+
+<!-- HEADER: Consistent across all pages -->
+<header class="flex-shrink-0 flex items-center justify-between px-6 py-3 bg-gradient-to-b from-bakerysoft to-bakerybg shadow-md gap-4 z-20 mb-10">
+    <a href="dashboard.html" class="flex items-center gap-2 text-bakerytext font-extrabold text-2xl">
+        <span class="text-3xl">🥐</span> LabsBakery
+    </a>
+    <div class="flex-1 text-center">
+        <h1 class="text-xl font-bold text-bakerytext">Recipe Book</h1>
+    </div>
+    <div class="w-48 text-right"> <!-- Placeholder for alignment -->
+        <a href="profile.html" class="text-bakerytextsoft hover:text-bakerydark transition text-2xl" title="Profile">🧑‍🍳</a>
+    </div>
+</header>
+
+
+<main class="max-w-6xl mx-auto px-4">
+
+    <!-- SEARCH/FILTER BAR -->
+    <div class="flex flex-col md:flex-row md:items-center gap-4 mb-8 bg-white/50 p-4 rounded-xl border border-bakerysoft shadow-sm">
+        <div class="relative flex-1">
+             <svg class="w-5 h-5 absolute top-1/2 left-3 -translate-y-1/2 text-bakerytextsoft" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+             <input x-model="search" type="text" placeholder="Search labs (Kali, AD, web...)" class="w-full pl-10 pr-4 py-2 rounded-lg border border-bakerysoft bg-white focus:outline-none focus:border-bakeryaccent focus:ring-2 focus:ring-bakerysoft font-semibold text-base text-bakerytext" />
+        </div>
+        <select x-model="filterDifficulty" class="px-4 py-2 rounded-lg border border-bakerysoft bg-white focus:outline-none focus:border-bakeryaccent focus:ring-2 focus:ring-bakerysoft font-semibold text-base text-bakerytextsoft">
+            <option value="">All Difficulties</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+    </div>
+
+    <!-- LAB CARDS GRID -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <template x-for="lab in filteredLabs()" :key="lab.id">
+            <div class="bg-bakerybg rounded-xl p-4 flex flex-col justify-between hover:shadow-bakery transition-all border-2 border-bakerysoft hover:border-bakeryaccent">
+                 <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl" x-text="lab.icon"></span>
+                            <h3 class="font-bold text-lg text-bakerytext leading-tight" x-text="lab.title"></h3>
+                        </div>
+                         <span class="px-2 py-0.5 text-xs font-bold rounded-full"
+                            :class="{
+                                'bg-green-100 text-green-800': lab.difficulty==='Easy',
+                                'bg-yellow-100 text-yellow-800': lab.difficulty==='Medium',
+                                'bg-red-100 text-red-800': lab.difficulty==='Hard'
+                            }"
+                            x-text="lab.difficulty"></span>
+                    </div>
+                    <p class="text-sm text-bakerytextsoft mb-4 h-10" x-text="lab.desc"></p>
+                    <div class="flex gap-2 flex-wrap mb-4">
+                        <span class="bg-white text-bakerydark px-2 py-0.5 rounded-md text-xs font-semibold" x-text="`${lab.vms} VMs`"></span>
+                    </div>
+                </div>
+                <div class="flex gap-2 mt-auto">
+                    <button @click="previewLab(lab)" class="flex-1 px-3 py-1.5 text-sm bg-white rounded-lg shadow-bakery-md font-semibold hover:bg-bakerybg transition border border-bakerysoft">Preview</button>
+                    <button @click="cloneLab(lab)" class="flex-1 px-3 py-1.5 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition">Clone</button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- No labs message -->
+    <div x-show="filteredLabs().length === 0" class="text-center py-12 bg-white/50 border-2 border-dashed border-bakerysoft rounded-2xl text-bakerytextsoft">
+        <span class="text-4xl mx-auto mb-3 opacity-70">🔎</span>
+        <p class="font-semibold">No recipes found.</p>
+        <p>Try another search or filter.</p>
+    </div>
+
+    <!-- LAB PREVIEW MODAL -->
+    <div x-show="modalLab" @keydown.escape.window="modalLab = null" x-transition.opacity class="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center p-4">
+        <div @click.away="modalLab = null" class="bg-white rounded-2xl shadow-bakery p-7 min-w-[340px] max-w-lg w-full relative border-2 border-bakerysoft" x-show="modalLab" x-transition>
+            <button class="absolute top-3 right-3 text-2xl text-bakerytextsoft hover:text-bakerydark" @click="modalLab=null">×</button>
+            <template x-if="modalLab">
+                <div>
+                    <div class="flex gap-3 items-center mb-3">
+                        <span class="text-5xl" x-text="modalLab.icon"></span>
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-bakerytext" x-text="modalLab.title"></h2>
+                             <span class="px-3 py-0.5 text-xs font-bold rounded-full"
+                                :class="{
+                                    'bg-green-100 text-green-800': modalLab.difficulty==='Easy',
+                                    'bg-yellow-100 text-yellow-800': modalLab.difficulty==='Medium',
+                                    'bg-red-100 text-red-800': modalLab.difficulty==='Hard'
+                                }"
+                                x-text="modalLab.difficulty"></span>
+                        </div>
+                    </div>
+                    <p class="text-base text-bakerytext/90 mb-4" x-text="modalLab.desc"></p>
+                    <div class="text-sm bg-bakerybg border border-bakerysoft rounded-lg p-3 space-y-1">
+                        <h4 class="font-bold text-bakerydark">Recipe:</h4>
+                        <ol class="list-decimal list-inside text-bakerytext/90">
+                            <template x-for="(step, i) in modalLab.guide" :key="i">
+                                <li x-text="step"></li>
+                            </template>
+                        </ol>
+                    </div>
+                    <button class="mt-5 bg-bakeryaccent hover:bg-bakerydark text-white px-6 py-2 rounded-lg font-bold w-full shadow-bakery-md transition-all transform hover:scale-105" @click="cloneLab(modalLab)">Clone this Recipe</button>
+                </div>
+            </template>
+        </div>
+    </div>
+</main>
+
+<script>
+function recipeBook() {
+    return {
+        search: '',
+        filterDifficulty: '',
+        modalLab: null,
+        labs: [
+            {
+                id: 1, icon: '🥖', title: "Kali + Metasploitable",
+                desc: "Classic pentest lab for practicing offensive techniques.",
+                vms: 2, difficulty: "Easy",
+                guide: [
+                    "Deploy Kali Linux (Attacker)",
+                    "Deploy Metasploitable (Target)",
+                    "Connect both to a virtual network"
+                ]
+            },
+            {
+                id: 2, icon: '🥐', title: "Active Directory Playground",
+                desc: "Practice AD attacks: includes Windows Server & clients.",
+                vms: 3, difficulty: "Medium",
+                guide: [
+                    "Deploy Windows Server (Domain Controller)",
+                    "Deploy Windows 10 Client",
+                    "Join client to the domain"
+                ]
+            },
+            {
+                id: 3, icon: '🥯', title: "SOC Mini-Lab",
+                desc: "Blue-team your skills: SIEM + vulnerable hosts.",
+                vms: 4, difficulty: "Hard",
+                guide: [
+                    "Deploy Firewall",
+                    "Deploy Security Onion (SIEM)",
+                    "Deploy 2x vulnerable hosts",
+                    "Route all traffic through the firewall to SIEM"
+                ]
+            },
+        ],
+        filteredLabs() {
+            let labs = this.labs;
+            if (this.search.trim()) {
+                let s = this.search.toLowerCase();
+                labs = labs.filter(l =>
+                    l.title.toLowerCase().includes(s) ||
+                    l.desc.toLowerCase().includes(s)
+                );
+            }
+            if (this.filterDifficulty) {
+                labs = labs.filter(l => l.difficulty === this.filterDifficulty);
+            }
+            return labs;
+        },
+        previewLab(lab) {
+            this.modalLab = lab;
+        },
+        cloneLab(lab) {
+            alert('Recipe "' + lab.title + '" cloned to your dashboard! (This would redirect to the builder)');
+            this.modalLab = null;
+        }
+    }
+}
+</script>
+</body>
+</html>

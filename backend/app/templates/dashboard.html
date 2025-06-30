@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased bg-bakerybg min-h-screen">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabsBakery - Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥐</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { bakerybg: '#FFF7E1', bakerysoft: '#FFE6B0', bakeryaccent: '#FFB347', bakerydark: '#D4870C', bakerytext: '#3B2F12' }, fontFamily: { sans: ['Nunito', 'sans-serif'] } } }
+        }
+    </script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body x-data="dashboard()" x-init="init()" class="text-bakerytext">
+    <div class="max-w-4xl mx-auto py-12 px-4">
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-extrabold flex items-center justify-center gap-4">
+                <span class="text-6xl">🥐</span> LabsBakery
+            </h1>
+            <p class="text-bakerytext/70 mt-2">Your personal cybersecurity lab kitchen.</p>
+        </div>
+
+        <div class="bg-white/60 p-6 rounded-2xl shadow-lg border border-bakerysoft">
+            <h2 class="text-2xl font-bold mb-4">Create New Lab</h2>
+            <div class="flex gap-4">
+                <input x-model="newProjectName" @keydown.enter="createProject" type="text" placeholder="e.g., Active-Directory-Fun" class="flex-grow px-4 py-2 bg-bakerybg border border-bakerysoft rounded-lg focus:outline-none focus:ring-2 focus:ring-bakeryaccent">
+                <button @click="createProject" class="px-6 py-2 bg-bakeryaccent text-white font-bold rounded-lg shadow-md hover:bg-bakerydark transition">Create & Edit</button>
+            </div>
+        </div>
+
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold mb-4">Existing Labs</h2>
+            <div x-show="projects.length === 0" class="text-center text-bakerytext/60 bg-white/50 p-8 rounded-lg">
+                No labs found. Create one above to get started!
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="project in projects" :key="project">
+                    <a :href="`index.html?project=${project}`" class="block bg-white p-5 rounded-xl shadow-md border border-bakerysoft hover:border-bakeryaccent hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                        <h3 class="font-bold text-lg text-bakerydark" x-text="project.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())"></h3>
+                        <p class="text-sm text-bakerytext/70">Click to open lab editor</p>
+                    </a>
+                </template>
+            </div>
+        </div>
+    </div>
+
+<script>
+function dashboard() {
+    return {
+        projects: [],
+        newProjectName: '',
+        API_BASE: 'http://127.0.0.1:8000',
+        init() {
+            this.fetchProjects();
+        },
+        async fetchProjects() {
+            try {
+                const response = await fetch(`${this.API_BASE}/projects`);
+                if (!response.ok) throw new Error('Failed to fetch projects');
+                this.projects = await response.json();
+            } catch (error) {
+                console.error(error);
+                alert('Could not connect to the backend server. Is it running?');
+            }
+        },
+        createProject() {
+            if (!this.newProjectName.trim()) {
+                alert('Please enter a project name.');
+                return;
+            }
+            const projectName = this.newProjectName.trim().replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
+            if(!projectName) {
+                alert('Invalid project name. Please use letters, numbers, and hyphens.');
+                return;
+            }
+            window.location.href = `index.html?project=${projectName}`;
+        }
+    }
+}
+</script>
+</body>
+</html>

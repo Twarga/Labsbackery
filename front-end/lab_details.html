@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased bg-bakerybg min-h-screen">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lab Details – LabsBakery</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥐</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // --- UNIFIED DESIGN SYSTEM ---
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                bakerybg: '#FFF7E1',
+                bakerysoft: '#FFE6B0',
+                bakeryaccent: '#FFB347',
+                bakerydark: '#D4870C',
+                bakerytext: '#3B2F12',
+                bakerytextsoft: '#a97a4e',
+              },
+              fontFamily: { sans: ['Nunito', 'sans-serif'] },
+              boxShadow: {
+                'bakery': '0 4px 24px 0 rgba(200,150,80,0.12)',
+                'bakery-md': '0 2px 12px 0 rgba(200,150,80,0.1)',
+              },
+            }
+          }
+        }
+    </script>
+    <style>
+      /* --- UNIFIED BASE STYLES --- */
+      body { font-family: 'Nunito', sans-serif; color: #3B2F12; }
+    </style>
+</head>
+<body class="bg-bakerybg min-h-screen text-bakerytext">
+
+<!-- HEADER: Consistent across all pages -->
+<header class="flex-shrink-0 flex items-center justify-between px-6 py-3 bg-gradient-to-b from-bakerysoft to-bakerybg shadow-md gap-4 z-20">
+    <a href="dashboard.html" class="flex items-center gap-2 text-bakerytext font-extrabold text-2xl">
+        <span class="text-3xl">🥐</span> LabsBakery
+    </a>
+    <div class="flex-1 text-center">
+        <h1 class="text-xl font-bold text-bakerytext">Lab Details</h1>
+    </div>
+    <div class="w-48 text-right"> <!-- Placeholder for alignment -->
+        <a href="dashboard.html" class="px-5 py-2 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition-all transform hover:scale-105">Dashboard</a>
+    </div>
+</header>
+
+
+<main class="max-w-5xl mx-auto py-12 px-4 grid md:grid-cols-2 gap-8 items-start">
+
+    <!-- LAB SUMMARY -->
+    <section class="bg-white rounded-2xl shadow-bakery p-6 flex flex-col gap-4 border-2 border-bakerysoft">
+        <div class="flex gap-4 items-center">
+            <span class="text-6xl">🥖</span>
+            <div>
+                <h1 class="text-3xl font-extrabold text-bakerytext">Pentest Playground</h1>
+                <div class="text-sm text-bakerytextsoft font-semibold flex gap-2 items-center mt-1">
+                    <span>Status: <span class="bg-bakerybg text-bakerydark font-bold rounded-full px-3 py-0.5">Draft</span></span>
+                    <span>•</span>
+                    <span>Last updated: 2025-06-21</span>
+                </div>
+            </div>
+        </div>
+        <p class="text-base text-bakerytext/90">
+            A classic pentesting lab with Kali and Metasploitable. The perfect starting point for learning the ropes.
+        </p>
+        <div class="flex gap-6 items-center border-t border-b border-bakerysoft py-4 my-2">
+            <div class="text-center">
+                <div class="font-extrabold text-bakerydark text-xl">2</div>
+                <div class="text-xs font-bold text-bakerytextsoft uppercase">VMs</div>
+            </div>
+            <div class="text-center">
+                <div class="font-extrabold text-bakerydark text-xl">4 GB</div>
+                <div class="text-xs font-bold text-bakerytextsoft uppercase">RAM</div>
+            </div>
+            <div class="text-center">
+                <div class="font-extrabold text-bakerydark text-xl">2</div>
+                <div class="text-xs font-bold text-bakerytextsoft uppercase">CPUs</div>
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button class="flex-1 px-4 py-2 text-sm bg-bakeryaccent text-white font-bold rounded-lg shadow-bakery-md hover:bg-bakerydark transition">Serve</button>
+            <button class="flex-1 px-4 py-2 text-sm bg-white rounded-lg shadow-bakery-md font-semibold hover:bg-bakerybg transition border border-bakerysoft">Clone</button>
+            <button class="flex-1 px-4 py-2 text-sm bg-white rounded-lg shadow-bakery-md font-semibold hover:bg-bakerybg transition border border-bakerysoft">Export</button>
+            <button class="px-4 py-2 text-sm bg-red-100 text-red-700 rounded-lg shadow-bakery-md font-semibold hover:bg-red-200 transition border border-red-200">Delete</button>
+        </div>
+    </section>
+
+    <!-- LAB TOPOLOGY & GUIDE -->
+    <section class="flex flex-col gap-6">
+        <!-- Topology preview -->
+        <div class="bg-white rounded-2xl shadow-bakery p-5 flex flex-col items-center border-2 border-bakerysoft">
+            <h3 class="mb-3 text-lg font-bold text-bakerytext">Topology Preview</h3>
+            <div class="w-full aspect-video bg-bakerybg rounded-lg shadow-inner border border-bakerysoft flex items-center justify-center text-bakerytextsoft mb-4">
+                <Supports prompt caching
+                Max output: 100,000 tokens
+                Input price: $2.00 / 1M tokens
+                Output price: $8.00 / 1M tokens
+                Cache reads price: $0.50 / 1M tokensspan class="text-4xl opacity-50">🗺️</span>
+            </div>
+            <a href="lab_builder.html" class="bg-bakeryaccent hover:bg-bakerydark text-white px-5 py-2 rounded-lg font-bold shadow-bakery-md transition-all transform hover:scale-105">Open in Builder</a>
+        </div>
+        <!-- Guide -->
+        <div class="bg-white rounded-2xl shadow-bakery p-5 border-2 border-bakerysoft">
+            <h3 class="mb-2 font-bold text-bakerytext text-lg flex items-center gap-2">Recipe Guide <span>📖</span></h3>
+            <ol class="list-decimal pl-5 text-bakerytext/90 text-base space-y-1.5">
+                <li>Start Kali (2GB RAM, 1 CPU)</li>
+                <li>Start Metasploitable (2GB RAM, 1 CPU)</li>
+                <li>Connect Kali to Metasploitable</li>
+            </ol>
+            <div class="mt-4 text-sm text-bakerytextsoft border-t border-bakerysoft pt-3">
+                <span class="font-bold text-bakerytext">Notes:</span> Practice classic attacks on this beginner-friendly setup.
+            </div>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

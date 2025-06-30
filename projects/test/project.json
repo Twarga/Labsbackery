@@ -1,0 +1,106 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "x": 100.0,
+      "y": 150.0,
+      "name": "Kali Attacker",
+      "icon": "icon-kali",
+      "os": "Kali Linux",
+      "ram": "2GB",
+      "cpu": "2",
+      "disk": "50GB",
+      "scripts": "apt-get update",
+      "notes": "Main attacker machine",
+      "status": "stopped",
+      "network": [
+        {
+          "ip": "",
+          "subnet": "",
+          "gateway": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "x": 400.0,
+      "y": 150.0,
+      "name": "Ubuntu WebServ",
+      "icon": "icon-ubuntu",
+      "os": "Ubuntu",
+      "ram": "1GB",
+      "cpu": "1",
+      "disk": "20GB",
+      "scripts": "apt-get install -y nginx",
+      "notes": "Target web server",
+      "status": "stopped",
+      "network": [
+        {
+          "ip": "",
+          "subnet": "",
+          "gateway": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "x": 100.0,
+      "y": 400.0,
+      "name": "Win10 Client",
+      "icon": "icon-win10",
+      "os": "Windows 10",
+      "ram": "4GB",
+      "cpu": "2",
+      "disk": "60GB",
+      "scripts": "",
+      "notes": "Internal network client",
+      "status": "stopped",
+      "network": [
+        {
+          "ip": "",
+          "subnet": "",
+          "gateway": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "x": 400.0,
+      "y": 400.0,
+      "name": "Metasploitable Target",
+      "icon": "icon-metasploitable",
+      "os": "Metasploitable",
+      "ram": "512MB",
+      "cpu": "1",
+      "disk": "10GB",
+      "scripts": "",
+      "notes": "Vulnerable target",
+      "status": "stopped",
+      "network": [
+        {
+          "ip": "",
+          "subnet": "",
+          "gateway": ""
+        }
+      ]
+    }
+  ],
+  "lines": [
+    {
+      "fromId": 1,
+      "toId": 2
+    },
+    {
+      "fromId": 3,
+      "toId": 4
+    }
+  ],
+  "labSettings": {
+    "title": "Dual Network Test Lab",
+    "objectives": "Test two separate private networks.",
+    "walkthrough": "1. Bake the lab.\n2. Check the Vagrantfile for two distinct 'bakery_net_#' internal networks.",
+    "difficulty": "Easy",
+    "tags": "networking, test"
+  },
+  "nodeIdCounter": 5
+}

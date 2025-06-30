@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box_check_update = false
+
+  {% for vm in vms %}
+  config.vm.define "{{ vm.hostname }}" do |node|
+    node.vm.box = "{{ vm.box_name }}"
+    node.vm.hostname = "{{ vm.hostname }}"
+
+    {% if vm.private_network_name %}
+    node.vm.network "private_network", virtualbox__intnet: "{{ vm.private_network_name }}", auto_config: false
+    {% endif %}
+
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "{{ vm.name }}"
+      vb.memory = "{{ vm.ram_mb }}"
+      vb.cpus = {{ vm.cpu }}
+      vb.gui = false
+    end
+
+    {% if vm.scripts %}
+    node.vm.provision "shell", inline: <<-SHELL
+      echo "--- Running user-provided boot scripts ---"
+      {{ vm.scripts | safe }}
+    SHELL
+    {% endif %}
+  end
+  {% endfor %}
+end

@@ -1,0 +1,39 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "x": 0.0,
+      "y": 0.0,
+      "name": "string",
+      "icon": "string",
+      "os": "string",
+      "ram": "string",
+      "cpu": "string",
+      "disk": "string",
+      "scripts": "string",
+      "notes": "string",
+      "status": "string",
+      "network": [
+        {
+          "ip": "",
+          "subnet": "",
+          "gateway": ""
+        }
+      ]
+    }
+  ],
+  "lines": [
+    {
+      "fromId": 0,
+      "toId": 0
+    }
+  ],
+  "labSettings": {
+    "title": "string",
+    "objectives": "string",
+    "walkthrough": "string",
+    "difficulty": "string",
+    "tags": "string"
+  },
+  "nodeIdCounter": 0
+}
